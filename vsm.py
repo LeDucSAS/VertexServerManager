@@ -548,7 +548,7 @@ class VertexServerManager():
             return False
 
         real_mod_url = urlopen(mod_url_to_download).geturl()
-        print("    Found real file location as '{real_mod_url}'")
+        print(f"    Found real file location as '{real_mod_url}'")
 
         if(urlopen(real_mod_url).getheader('Content-Type') != "application/zip"):
             print("Error : File type is not zip.")
