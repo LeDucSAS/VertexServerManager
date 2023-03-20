@@ -34,7 +34,7 @@ This tool should be able to
 
 0. Choose a directory you want to be your server manager root.
 1. Put `vsm.py` in empty directory. 
-2. Init directory to create required folders : `./cache/` (for download and unzip), `./servers/` (to store servers instances), `./maps/` (common folder for every 	instance in order to save disk space).
+2. Init directory to create required folders : `./cache/` (for download and unzip), `./servers/` (to store servers instances), `./maps/` (common folder for every server in order to save disk space, it is done as creating a symlink from `./maps/` to each `./servers/GameServerXXXXX/MCS/UserCreatedContent/maps`).
 ```console
 ~$ ls -1p --group-directories-first
 README.md
