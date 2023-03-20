@@ -6,20 +6,18 @@ License Art Libre 1.3 (https://artlibre.org/)
 
 ## Purpose and functional specification
 This tool should be able to
-- Work as comand line execution only
+- Work as comand line execution only, be callable from other utilities (like discord bot)
 - Consider the directory he's inside as the root of the server folder structure
 - Setup/create a global server folder structure
 - Create and install server instances
 - Start server on demand
 - Stop server on demand
 - Restart server on demand
-- Start all
 - Restart all
 - Kill all
 - Make mutualized folder for mods
-- Be called from other utilities (like discord bot)
-- Configure server instances for each command line arguments
-- Configure server instances game.ini at some extent
+- Customize server launch command line arguments (port, server name, map, gamemode)
+- Update ini files values (like Game.ini)
 - Download mods from vertex mod.io repository
 
 
@@ -41,7 +39,11 @@ python3 vsm.py --start-id 27070 --set-server-name "Server number 1"
 5. `--set-server-map` define the map you want. `--set-server-mode` define the mode you want. To force another port than default use `--set-server-port`. You still kill it with the same ID (ex: 27070 because its server name GameServer27070) even though you forced another port (ex: 4242).
 ```bash
 # The maximum you can
-python3 vsm.py --start-id 27070 --set-server-name "Server number 1" --set-server-map LEDUCSAS_VERTEX_TEMPLE --set-server-mode=DUEL --set-server-port 4242
+python3 vsm.py --start-id 27070 \
+--set-server-name "Server number 1" \
+--set-server-map LEDUCSAS_VERTEX_TEMPLE \
+--set-server-mode DUEL \
+--set-server-port 4242
 ```
 6. Some straightforward commands
 ```bash
