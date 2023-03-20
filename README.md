@@ -7,12 +7,8 @@ License Art Libre 1.3 (https://artlibre.org/)
 ## Purpose and functional specification
 This tool should be able to
 - Work as comand line execution only
-- Init and selecting his current wording directory
-    - The current folder he's inside for init
-    - If argument given then taking arg as working directory path for init
+- Consider the directory he's inside as the root of the server folder structure
 - Setup/create a global server folder structure
-    - Inside the path he's inside
-    - Inside a selected path
 - Create and install server instances
 - Start server on demand
 - Stop server on demand
