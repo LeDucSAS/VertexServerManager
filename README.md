@@ -90,7 +90,7 @@ python3 vsm.py \
 --ini-update-key RequiresPassword \
 --ini-new-value False
 ```
-8. You can download mods from mod.io. The link to be used has to be found on the new mod.io website. For example on https://mod.io/g/vertex/m/leducsas-cosmos you have the side section titled _Download files manually_ on which you have _File <icon_release_note> <icon_download>_. You have to right click on <icon_download> and copy paste the link (currently https://api.mod.io/v1/games/594/mods/1780746/files/2779135/download); it is that link that has to be passed to `--install-mod` as argument.
+8. You can download mods from mod.io. The link to be used has to be found on the new mod.io website. For example on https://mod.io/g/vertex/m/leducsas-cosmos you have the side section titled _Download files manually_ on which you have `File <icon_release_note> <icon_download>`. You have to right click on `<icon_download>` and copy paste the link (currently https://api.mod.io/v1/games/594/mods/1780746/files/2779135/download); it is that link that has to be passed to `--install-mod` as argument.
 ```console
 python3 vsm.py --install-mod https://api.mod.io/v1/games/594/mods/1780746/files/2779135/download
 ```
