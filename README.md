@@ -5,10 +5,10 @@ License Art Libre 1.3 (https://artlibre.org/).
 
 
 > **Note**
-> **OS support**
-> Linux support (tested Ubuntu 22.04.2 LTS and Python 3.10)
-> Windows - Planned
-> MacOS - Not planned yet
+> About OS support
+* Linux support (tested Ubuntu 22.04.2 LTS and Python 3.10)
+* Windows - Planned
+* MacOS - Not planned yet
 
 
 ## Purpose and functional specification
