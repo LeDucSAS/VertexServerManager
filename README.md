@@ -3,6 +3,31 @@ Command line tool and class to be used for Vertex game server management (https:
 
 License Art Libre 1.3 (https://artlibre.org/)
 
+
+## Purpose and functional specification
+This tool should be able to
+- Work as comand line execution only
+- Init and selecting his current wording directory
+    - The current folder he's inside for init
+    - If argument given then taking arg as working directory path for init
+- Setup/create a global server folder structure
+    - Inside the path he's inside
+    - Inside a selected path
+- Create and install server instances
+- Start server on demand
+- Stop server on demand
+- Restart server on demand
+- Start all
+- Restart all
+- Kill all
+- Make mutualized folder for mods
+- Be called from other utilities (like discord bot)
+- Configure server instances for each command line arguments
+- Configure server instances game.ini at some extent
+- Download mods from vertex mod.io repository
+
+
+## User guide
 1. Put file in empty directory
 2. Init directory to create required folders : `./cache/` (for download and unzip), `./servers/` (to store servers instances), `./maps/` (common folder for every 	instance in order to save disk space).
 ```bash
@@ -39,3 +64,6 @@ python3 vsm.py --install-mod https://api.mod.io/v1/games/594/mods/1780746/files/
 ```
 
 Feedback much appreciated !
+
+Your sincerely,
+LeDucSAS
