@@ -566,7 +566,7 @@ class VertexServerManager():
             print(f"    ->  Done")
 
         # Download
-        print(f"Downloading '{real_mod_url}'.")
+        print(f"Downloading '{real_mod_url}'...")
         cache_downloaded_mod_zip = self.download_file_to_cache(real_mod_url)
         print(f"    ->  Done")
 
@@ -575,7 +575,7 @@ class VertexServerManager():
             print(f"Warning : Doing cleanup, removes pre-existing '{new_mod_cache_path}'.")
             shutil.rmtree(new_mod_cache_path)
             print(f"    ->  Done")
-        print(f"Create '{new_mod_cache_path}'")
+        print(f"Creating '{new_mod_cache_path}'...")
         os.makedirs(new_mod_cache_path)
         print(f"    ->  Done")
 
