@@ -3,15 +3,13 @@ Command line tool and class to be used for Vertex game server management (https:
 
 License Art Libre 1.3 (https://artlibre.org/).
 
-**OS support**
-```diff
-+ Done
-Linux support (tested Ubuntu 22.04.2 LTS and Python 3.10)
-! Planned
-Windows
-- Not planned yet
-MacOS
-```
+
+> **Note**
+> **OS support**
+> Linux support (tested Ubuntu 22.04.2 LTS and Python 3.10)
+> Windows - Planned
+> MacOS - Not planned yet
+
 
 ## Purpose and functional specification
 This tool should be able to
@@ -28,6 +26,10 @@ This tool should be able to
 - Customize server launch command line arguments (port, server name, map, gamemode)
 - Update ini files values (like Game.ini)
 - Download mods from vertex mod.io repository
+
+> **Warning**
+> You have to do port management yourself (sudo ufw ...)
+
 
 
 ## User guide
