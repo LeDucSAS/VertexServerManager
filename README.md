@@ -36,7 +36,20 @@ This tool should be able to
 1. Put `vsm.py` in empty directory. 
 2. Init directory to create required folders : `./cache/` (for download and unzip), `./servers/` (to store servers instances), `./maps/` (common folder for every 	instance in order to save disk space).
 ```bash
-python3 vsm.py --init
+$ ls -1 --group-directories-first
+README.md
+vsm.py
+
+$ python3 vsm.py --init
+Check that path has not been initialized already.
+    ->  Current directory has been init for vertex servers
+
+$ ls -1 --group-directories-first
+cache
+maps
+servers
+README.md
+vsm.py
 ```
 3. Install as much server as you want. Each server will be created fallowing "Name+ID" rule (Ex: GameServer27070). By default ID = default port (here ID = 27070). 
 ```bash
