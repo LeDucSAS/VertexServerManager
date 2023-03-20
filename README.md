@@ -53,19 +53,19 @@ vsm.py
 ```
 3. Install as much server as you want. Each server will be created fallowing "Name+ID" rule (Ex: GameServer27070). By default ID = default port (here ID = 27070). 
 ```console
-python3 vsm.py --install-server
+~$ python3 vsm.py --install-server
 ```
 4. Start a server using `--start-id` or `-s` (note : `--start-id 27070` is a shortcut to select `GameServer27070`). Also if the server is already started it won't start it twice. `--set-server-name` is pretty explicit. 
 ```console
 # The minimum you need (default open mode on ocean complex)
-python3 vsm.py \
+~$ python3 vsm.py \
 --start-id 27070 \
 --set-server-name "Server number 1" 
 ```
 5. `--set-server-map` define the map you want. `--set-server-mode` define the mode you want. To force another port than default use `--set-server-port`. You still kill it with the same ID (ex: 27070 because its server name GameServer27070) even though you forced another port (ex: 4242). 
 ```console
 # The maximum you can
-python3 vsm.py \
+~$ python3 vsm.py \
 --start-id 27070 \
 --set-server-name "Server number 1" \
 --set-server-map LEDUCSAS_VERTEX_TEMPLE \
@@ -77,14 +77,14 @@ python3 vsm.py \
 ```
 6. Some straightforward commands.
 ```console
-python3 vsm.py --kill-id 27070 # or -k 27070
-python3 vsm.py --restart-id 27070 # or -r 27070
-python3 vsm.py --restart-all
-python3 vsm.py --kill-all
+~$ python3 vsm.py --kill-id 27070 # or -k 27070
+~$ python3 vsm.py --restart-id 27070 # or -r 27070
+~$ python3 vsm.py --restart-all
+~$ python3 vsm.py --kill-all
 ```
 7. You can update ini files, as security will not execute if server is live (since server shutdown overwrite some ini files).
 ```console
-python3 vsm.py \
+~$ python3 vsm.py \
 --ini-update-server-id 27070 \
 --ini-file Game.ini \
 --ini-update-key RequiresPassword \
@@ -92,7 +92,7 @@ python3 vsm.py \
 ```
 8. You can download mods from mod.io. The link to be used has to be found on the new mod.io website. For example on https://mod.io/g/vertex/m/leducsas-cosmos you have the side section titled _Download files manually_ on which you have `File <icon_release_note> <icon_download>`. You have to right click on `<icon_download>` and copy paste the link (currently https://api.mod.io/v1/games/594/mods/1780746/files/2779135/download); it is that link that has to be passed to `--install-mod` as argument.
 ```console
-python3 vsm.py --install-mod https://api.mod.io/v1/games/594/mods/1780746/files/2779135/download
+~$ python3 vsm.py --install-mod https://api.mod.io/v1/games/594/mods/1780746/files/2779135/download
 ```
 
 Feedback much appreciated !
