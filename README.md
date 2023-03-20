@@ -34,12 +34,15 @@ python3 vsm.py --install-server
 4. Start a server using `--start-id` or `-s` (note : `--start-id 27070` is a shortcut to select `GameServer27070`). Also if the server is already started it won't start it twice. `--set-server-name` is pretty explicit. 
 ```bash
 # The minimum you need (default open mode on ocean complex)
-python3 vsm.py --start-id 27070 --set-server-name "Server number 1" 
+python3 vsm.py \
+--start-id 27070 \
+--set-server-name "Server number 1" 
 ```
 5. `--set-server-map` define the map you want. `--set-server-mode` define the mode you want. To force another port than default use `--set-server-port`. You still kill it with the same ID (ex: 27070 because its server name GameServer27070) even though you forced another port (ex: 4242).
 ```bash
 # The maximum you can
-python3 vsm.py --start-id 27070 \
+python3 vsm.py \
+--start-id 27070 \
 --set-server-name "Server number 1" \
 --set-server-map LEDUCSAS_VERTEX_TEMPLE \
 --set-server-mode DUEL \
@@ -54,7 +57,11 @@ python3 vsm.py --kill-all
 ```
 7. You can update ini files. Won't work if server is live.
 ```bash
-python3 vsm.py --ini-update-server-id 27070 --ini-file Game.ini --ini-update-key RequiresPassword --ini-new-value False
+python3 vsm.py \
+--ini-update-server-id 27070 \
+--ini-file Game.ini \
+--ini-update-key RequiresPassword \
+--ini-new-value False
 ```
 8. You can download mods from mod.io
 ```bash
