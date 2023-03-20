@@ -593,7 +593,7 @@ class VertexServerManager():
         print(f"Moving '{new_mod_cache_path}' to '{new_mod_maps_path}'...")
         shutil.move(new_mod_cache_path, new_mod_maps_path)
         print(f"    ->  Done")
-        print(f"Removing... '{cache_downloaded_mod_zip}'...")
+        print(f"Removing '{cache_downloaded_mod_zip}'...")
         os.remove(cache_downloaded_mod_zip)
         print(f"    ->  Done")
         
