@@ -1,35 +1,36 @@
 # LeDucSAS - Vertex Server Manager (VSM)
-# Version 202303200000 Release 6
-# AKA VSM-R6
 # License : Free art license 1.3 https://artlibre.org/
+'''
 
+Functional specifications
+
+This tool should be able to
+- Work as comand line execution only
+- Init and selecting his current wording directory
+    - The current folder he's inside for init
+    - If argument given then taking arg as working directory path for init
+- Setup/create a global server folder structure
+    - Inside the path he's inside
+    - Inside a selected path
+- Create and install server instances
+- Start server on demand
+- Stop server on demand
+- Restart server on demand
+- Start all
+- Restart all
+- Kill all
+- Make mutualized folder for mods
+- Be called from other utilities (like discord bot)
+- Configure server instances for each command line arguments
+- Configure server instances game.ini at some extent
+- Download mods from vertex mod.io repository
+
+'''
 
 class VertexServerManager():
-    """
-    Functional spec
+    def __init__(self):
+        ...
 
-    This tool should be able to
-    - Work as comand line execution only
-    - Init and selecting his current wording directory
-        - The current folder he's inside for init
-        - If argument given then taking arg as working directory path for init
-    - Setup/create a global server folder structure
-        - Inside the path he's inside
-        - Inside a selected path
-    - Create and install server instances
-    - Start server on demand
-    - Stop server on demand
-    - Restart server on demand
-    - Start all
-    - Restart all
-    - Kill all
-    - Make mutualized folder for mods
-    - Be called from other utilities (like discord bot)
-    - Configure server instances for each command line arguments
-    - Configure server instances game.ini at some extent
-    - Download mods from vertex mod.io repository
-
-    """
     """
 
     Class Structure
@@ -37,10 +38,10 @@ class VertexServerManager():
     def __init__(self):
     def is_folder_has_been_initialized    (self, directory_path=None):
     def is_server_already_started         (self, server_name):
-    def create_symlink                    (self, symlinkSourcePath, symlinkTargetPath):
+    def create_symlink                    (self, symlink_source_path, symlink_target_path):
     def get_server_list_full_Path         (self, directory_path):
     def get_server_list_only_name         (self, directory_path=None):
-    def find_server_name_by_id          (self, server_port):
+    def find_server_name_by_id            (self, server_port):
     def get_current_highest_gameserver_id (self, directory_path=None):
     def start_server_by_name              (self, server_name):
     def start_server_by_id                (self, server_port):
@@ -52,12 +53,10 @@ class VertexServerManager():
     def download_file_to_cache            (self, url_to_download):
     def untargz_cached_file               (self, tarGzFilePath, extractTargetPath):
     def install_linux_game_server         (self, choosen_version=None):
+    def update_ini_file_value             (self, server_name, ini_filename, key_to_update, new_value):
+    def install_mod                       (self, mod_url_to_download):
+
     """
-
-    def __init__(self):
-        ...
-
-
 
 
     '''
@@ -69,25 +68,25 @@ class VertexServerManager():
     '''
     DATA = {}
 
-    DATA['playVertexRoot'] = "https://www.playvertex.com"
-    DATA['filekPatchHostLinuxLatest'] = f"{DATA['playVertexRoot']}/patchhostlinux"
+    DATA['playVertexRoot']              = "https://www.playvertex.com"
+    DATA['filekPatchHostLinuxLatest']   = f"{DATA['playVertexRoot']}/patchhostlinux"
     DATA['filekPatchHostWindowsLatest'] = f"{DATA['playVertexRoot']}/patchhostwindows"
-    DATA['filePatchLatest'] = f"{DATA['playVertexRoot']}/patch"
+    DATA['filePatchLatest']             = f"{DATA['playVertexRoot']}/patch"
     DATA['fileVertexServerFullWindows'] = f"{DATA['playVertexRoot']}/download/files/Vertex_Server_Windows_<VERSION>.zip"
-    DATA['fileVertexServerFullLinux'] = f"{DATA['playVertexRoot']}/download/files/Vertex_Server_Linux_<VERSION>.tar.gz"
+    DATA['fileVertexServerFullLinux']   = f"{DATA['playVertexRoot']}/download/files/Vertex_Server_Linux_<VERSION>.tar.gz"
 
-    DATA['apiRoot'] = "https://api.playvertex.com"
-    DATA['apiServers'] = f"{DATA['apiRoot']}/servers"
-    DATA['apiStats'] = f"{DATA['apiRoot']}/stats"
-    DATA['apiVersion'] = f"{DATA['apiRoot']}/version"
+    DATA['apiRoot']             = "https://api.playvertex.com"
+    DATA['apiServers']          = f"{DATA['apiRoot']}/servers"
+    DATA['apiStats']            = f"{DATA['apiRoot']}/stats"
+    DATA['apiVersion']          = f"{DATA['apiRoot']}/version"
 
     DATA['server_nameTemplate'] = "GameServer<NUMBER>"
     DATA['defaultStartingPort'] = 27070
 
-    DATA['gameServerMap'] = "P_FFA_COMPLEX"
-    DATA['gameServerMode'] = "OPEN"
-    DATA['gameServer_port'] = -1
-    DATA['gameServer_name'] = "You forgot to setup my server name"
+    DATA['gameServerMap']       = "P_FFA_COMPLEX"
+    DATA['gameServerMode']      = "OPEN"
+    DATA['gameServer_port']     = -1
+    DATA['gameServer_name']     = "You forgot to setup my server name"
 
 
 
@@ -106,9 +105,11 @@ class VertexServerManager():
         if directory_path == None:
             directory_path = os.getcwd()
 
-        if (os.path.exists(f"{directory_path}/maps") and 
+        if (
+            os.path.exists(f"{directory_path}/maps")    and 
             os.path.exists(f"{directory_path}/servers") and 
-            os.path.exists(f"{directory_path}/cache")):
+            os.path.exists(f"{directory_path}/cache")
+        ):
             return True
         else:
             return False
@@ -129,11 +130,11 @@ class VertexServerManager():
         except subprocess.CalledProcessError as e:
             return False
 
-    def create_symlink(self, symlinkSourcePath, symlinkTargetPath):
+    def create_symlink(self, symlink_source_path, symlink_target_path):
         import os
         os.symlink(
-            os.path.abspath(symlinkSourcePath), 
-            os.path.abspath(symlinkTargetPath)
+            os.path.abspath(symlink_source_path), 
+            os.path.abspath(symlink_target_path)
         )
         return True
 
@@ -347,9 +348,9 @@ class VertexServerManager():
 
         print("Check that path has not been initialized already.")
         if not self.is_folder_has_been_initialized():
-            map_folder_path = f"{server_init_path}/maps"
+            map_folder_path    = f"{server_init_path}/maps"
             server_folder_path = f"{server_init_path}/servers"
-            cache_folder_path = f"{server_init_path}/cache"
+            cache_folder_path  = f"{server_init_path}/cache"
 
             os.makedirs(map_folder_path)
             os.makedirs(server_folder_path)
@@ -487,13 +488,13 @@ class VertexServerManager():
             print("    ->  Error")
 
 
-    def update_ini_file_value(self, serverName, ini_filename, key_to_update, new_value):
+    def update_ini_file_value(self, server_name, ini_filename, key_to_update, new_value):
         import configparser
         import os
         import ast
         
         ini_file_path = "./servers/<SERVER_NAME>/MCS/Saved/Config/LinuxServer/<INI_FILENAME>"
-        ini_file_path = ini_file_path.replace("<SERVER_NAME>", serverName)
+        ini_file_path = ini_file_path.replace("<SERVER_NAME>", server_name)
         ini_file_path = ini_file_path.replace("<INI_FILENAME>", ini_filename)
 
         if not os.path.exists(ini_file_path):
@@ -536,6 +537,7 @@ class VertexServerManager():
                     else:
                         print(f"Value mismatch : ini value is type '{type_of_ini_value}' and new value is type '{type_of_new_value}'.")
                         break
+
         if not key_has_been_found:
             print(f"Config key '{key_to_update}' has not been found inside '{ini_file_path}'.")
         return key_has_been_found
@@ -576,12 +578,13 @@ class VertexServerManager():
             print("Error : File type is not zip.")
             return False
 
-        mod_id = split_url[7]
-        server_init_path = os.getcwd()
-        new_mod_cache_path = f"{server_init_path}/cache/{mod_id}"
-        new_mod_maps_path = f"{server_init_path}/maps/{mod_id}"
+        mod_id               = split_url[7]
+        server_init_path     = os.getcwd()
+        new_mod_cache_path   = f"{server_init_path}/cache/{mod_id}"
+        new_mod_maps_path    = f"{server_init_path}/maps/{mod_id}"
         filename_to_download = real_mod_url.split("/")[-1]
-        check_file_exists = f"{server_init_path}/cache/{filename_to_download}"
+        check_file_exists    = f"{server_init_path}/cache/{filename_to_download}"
+
         if os.path.isfile(check_file_exists):
             os.remove(check_file_exists)
 
@@ -606,6 +609,9 @@ class VertexServerManager():
         print(f"Success : Mod id {mod_id} with filename {filename_to_download} successfully downloaded and installed.")
         return True
 
+
+
+
 '''
 
 
@@ -613,10 +619,34 @@ ARGPARSE AREA
 
 
 '''
+
+# Argparse data structure
+'''
+{
+    'init'                 : False, # Boolean automatic set
+    'install_server'       : False, # Boolean automatic set
+    'start_id'             : None,  # int
+    'kill_id'              : None,  # int
+    'restart_id'           : None,  # int
+    'kill_all'             : False, # Boolean automatic set
+    'restart_all'          : False, # Boolean automatic set
+    'set_server_name'      : None,  # str
+    'set_server_port'      : None,  # int
+    'set_server_map'       : None,  # str
+    'set_server_mode'      : None,  # str
+    'ini_update_server_id' : None,  # int
+    'ini_file'             : None,  # str
+    'ini_update_key'       : None,  # str
+    'ini_new_value'        : None,  # str
+    'install_mod'          : None   # str (URL)
+}
+'''
+
+
 import argparse
 import sys
 
-parser = argparse.ArgumentParser( description="Server manager", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser = argparse.ArgumentParser( description="LeDucSAS - Vertex Server Manager", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 # Setup and installation
 parser.add_argument("--init"          , action="store_true", help="Initialize the folder by creating ./cache/, ./servers/ and ./maps/ folder.")
@@ -656,30 +686,6 @@ config = vars(args)
 if len(sys.argv)==1:
     parser.print_help(sys.stderr)
     sys.exit(1)
-
-
-# Data structure
-'''
-{
-    'init': False, 
-    'verbose': False, => desactivated 
-    'install_server': False, 
-    'start_id': None, 
-    'kill_id': None, 
-    'restart_id': None, 
-    'start_all': False, => desactivated
-    'kill_all': False, 
-    'restart_all': False, 
-    'set_server_name': None, 
-    'set_server_port': None, 
-    'set_server_map': None, 
-    'set_server_mode': None, 
-    'ini_update_server_id': None, 
-    'ini_file': None, 
-    'ini_update_key': None, 
-    'ini_new_value': None
-}
-'''
 
 
 
@@ -786,7 +792,7 @@ if config["restart_id"]:
         else:
             print("No server installed.")
 
-''' Desactivated because can't properly specify values '''
+''' Desactivated because can't properly specify values unless relying on creating a config file'''
 # Do start all server
 # if config["start_all"]:
 #   import os
@@ -821,6 +827,7 @@ if config["restart_all"]:
     else:
         print("No server installed.")
 
+
 # Update ini file
 if config["ini_update_server_id"]:
     # check server exists
@@ -828,9 +835,11 @@ if config["ini_update_server_id"]:
         server_name = vsm.find_server_name_by_id(config["ini_update_server_id"])
         if not vsm.is_server_already_started(server_name):
             if server_name is not None:
-                if (config['ini_file'] is not None and 
+                if (
+                    config['ini_file']       is not None and 
                     config['ini_update_key'] is not None and
-                    config['ini_new_value'] is not None):
+                    config['ini_new_value']  is not None
+                ):
                     vsm.update_ini_file_value(server_name, config['ini_file'], config['ini_update_key'], config['ini_new_value'])
                 else:
                     print("Error : Script require the 4 arguments : --ini-update-server-id, --ini-file, --ini-update-key, --ini-new-value.")
@@ -846,6 +855,7 @@ if config["ini_update_server_id"]:
             for server_name in serverList: print(server_name)
         else:
             print("No server installed.")
+
 
 # Install new modfile
 if config["install_mod"]:
