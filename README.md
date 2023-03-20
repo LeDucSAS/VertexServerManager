@@ -35,7 +35,10 @@ This tool should be able to
 ## User guide
 
 0. Choose a directory you want to be your server manager root.
-1. Put `vsm.py` in empty directory. 
+1. Put `vsm.py` in empty directory. To be able to update the file easily you can use git clone to create a VertexServerManager folder;
+```console
+~$ git clone https://github.com/LeDucSAS/VertexServerManager/
+```
 2. Init directory to create required folders : `./cache/` (for download and unzip), `./servers/` (to store servers instances), `./maps/` (common folder for every server in order to save disk space, it is done as creating a symlink from `./maps/` to each `./servers/GameServerXXXXX/MCS/UserCreatedContent/maps`).
 ```console
 ~$ ls -1p --group-directories-first
