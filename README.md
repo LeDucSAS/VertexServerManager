@@ -1,7 +1,7 @@
 # LeDucSAS - Vertex server manager
 Command line tool and class to be used for Vertex game server management (https://playvertex.com/)
 
-License Art Libre 1.3
+License Art Libre 1.3 (https://artlibre.org/)
 
 1. Put file in empty directory
 2. Init directory to create required folders : `./cache/` (for download and unzip), `./servers/` (to store servers instances), `./maps/` (common folder for every 	instance in order to save disk space).
