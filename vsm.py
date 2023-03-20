@@ -1,31 +1,5 @@
 # LeDucSAS - Vertex Server Manager (VSM)
 # License : Free art license 1.3 https://artlibre.org/
-'''
-
-Functional specifications
-
-This tool should be able to
-- Work as comand line execution only
-- Init and selecting his current wording directory
-    - The current folder he's inside for init
-    - If argument given then taking arg as working directory path for init
-- Setup/create a global server folder structure
-    - Inside the path he's inside
-    - Inside a selected path
-- Create and install server instances
-- Start server on demand
-- Stop server on demand
-- Restart server on demand
-- Start all
-- Restart all
-- Kill all
-- Make mutualized folder for mods
-- Be called from other utilities (like discord bot)
-- Configure server instances for each command line arguments
-- Configure server instances game.ini at some extent
-- Download mods from vertex mod.io repository
-
-'''
 
 class VertexServerManager():
     def __init__(self):
