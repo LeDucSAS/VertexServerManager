@@ -3,6 +3,11 @@ Command line tool and class to be used for Vertex game server management (https:
 
 License Art Libre 1.3 (https://artlibre.org/)
 
+```diff
++ Linux supported (tested Ubuntu 22.04.2 LTS and Python 3.10)
+! Windows to be done, planned
+- MacOS to be done, not planned
+```
 
 ## Purpose and functional specification
 This tool should be able to
