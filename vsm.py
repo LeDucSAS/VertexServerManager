@@ -527,6 +527,7 @@ class VertexServerManager():
             print("Warning : Folder has not been init, script will stop.")
             return
 
+        print("Checking URL...")
         invalid_provided_url_error_message = "Error : Invalid URL : please provide a url like https://api.mod.io/v1/games/594/mods/<mod_id>/files/<file_id>/download"
         split_url = mod_url_to_download.split("/")
         '''
@@ -551,7 +552,7 @@ class VertexServerManager():
         if(urlopen(real_mod_url).getheader('Content-Type') != "application/zip"):
             print("Error : File type is not zip.")
             return False
-
+        print("    ->  Done")
         mod_id               = split_url[7]
         server_init_path     = os.getcwd()
         new_mod_cache_path   = f"{server_init_path}/cache/{mod_id}"
@@ -560,25 +561,41 @@ class VertexServerManager():
         check_file_exists    = f"{server_init_path}/cache/{filename_to_download}"
 
         if os.path.isfile(check_file_exists):
+            print(f"Warning : Doing cleanup, removes pre-existing '{check_file_exists}'.")
             os.remove(check_file_exists)
+            print(f"    ->  Done")
 
         # Download
-        downloaded_mod_path = self.download_file_to_cache(real_mod_url)
+        print(f"Downloading '{real_mod_url}'.")
+        cache_downloaded_mod_zip = self.download_file_to_cache(real_mod_url)
+        print(f"    ->  Done")
 
         # Clean leftovers of a previous attempt and create
         if os.path.isdir(new_mod_cache_path):
+            print(f"Warning : Doing cleanup, removes pre-existing '{new_mod_cache_path}'.")
             shutil.rmtree(new_mod_cache_path)
+            print(f"    ->  Done")
+        print(f"Create '{new_mod_cache_path}'")
         os.makedirs(new_mod_cache_path)
+        print(f"    ->  Done")
 
         # Unzip to new folder
-        with zipfile.ZipFile(downloaded_mod_path, 'r') as zip_ref:
+        print(f"Extracting '{cache_downloaded_mod_zip}'...")
+        with zipfile.ZipFile(cache_downloaded_mod_zip, 'r') as zip_ref:
             zip_ref.extractall(new_mod_cache_path)
+        print(f"    ->  Done")
 
         # Remove existing mod in ./maps/ and place new folder inside it
         if os.path.isdir(new_mod_maps_path):
+            print(f"Warning : Doing cleanup, removes pre-existing '{new_mod_maps_path}'.")
             shutil.rmtree(new_mod_maps_path)
+            print(f"    ->  Done")
+        print(f"Moving '{new_mod_cache_path}' to '{new_mod_maps_path}'...")
         shutil.move(new_mod_cache_path, new_mod_maps_path)
-        os.remove(downloaded_mod_path)
+        print(f"    ->  Done")
+        print(f"Removing... '{cache_downloaded_mod_zip}'...")
+        os.remove(cache_downloaded_mod_zip)
+        print(f"    ->  Done")
         
         print(f"Success : Mod id {mod_id} with filename {filename_to_download} successfully downloaded and installed.")
         return True
