@@ -10,6 +10,9 @@ License Art Libre 1.3 (https://artlibre.org/).
 * Windows - Planned
 * MacOS - Not planned yet
 
+> **Note**
+> The script ends after executing each command, it does not run as a process persistently or a service.
+
 
 ## Purpose and functional specification
 This tool should be able to
