@@ -3,6 +3,8 @@ Command line tool and class to be used for Vertex game server management (https:
 
 License Art Libre 1.3 (https://artlibre.org/).
 
+> **Modules to install**
+> psutil
 
 > **Note**
 > About OS support
