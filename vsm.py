@@ -80,8 +80,8 @@ class VertexServerManager():
             directory_path = os.getcwd()
 
         if (
-            os.path.exists(f"{directory_path}/maps")    and 
-            os.path.exists(f"{directory_path}/servers") and 
+            os.path.exists(f"{directory_path}/maps")    and
+            os.path.exists(f"{directory_path}/servers") and
             os.path.exists(f"{directory_path}/cache")
         ):
             return True
@@ -189,7 +189,7 @@ class VertexServerManager():
             self.DATA['gameServer_port'] = re.sub('[^0-9]','', server_name)
         
         server = subprocess.Popen([
-                f"./servers/{server_name}/MCS/Binaries/Linux/MCSServer {self.DATA['gameServerMap']}?game={self.DATA['gameServerMode']} -port={self.DATA['gameServer_port']} -server_name='{self.DATA['gameServer_name']}'"
+                f"./servers/{server_name}/MCS/Binaries/Linux/MCSServer {self.DATA['gameServerMap']}?game={self.DATA['gameServerMode']} -port={self.DATA['gameServer_port']} -servername='{self.DATA['gameServer_name']}'"
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -290,7 +290,7 @@ class VertexServerManager():
                             self.DATA['gameServerMode'] = arg.split("=")[1]
                         if "?" in arg:
                             self.DATA['gameServerMap'] = arg.split("?")[0]
-                        if "-server_name=" in arg:
+                        if "-servername=" in arg:
                             self.DATA['gameServer_name'] = arg.split("=")[1]
 
                     self.kill_server_by_name(server_name)
