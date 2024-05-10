@@ -279,19 +279,20 @@ class VertexServerManager():
         import subprocess
         import time
         from subprocess import check_output
-        print(server_name)
+
+        server_is_active = self.is_server_already_started(server_name)
+        if not server_is_active:
+            print(f"    -> Server {server_name} is not currently active.")
+            return
+
         errorNoServer = False
         # First SIGINT
         try:
-            from sys import platform
-            if platform == "linux" or platform == "linux2":
-                pidlist = check_output(["pidof","MCSServer"], universal_newlines=True).split()
-                for pid in pidlist:
-                    p = psutil.Process(int(pid))
-                    if server_name in p.exe():
-                        os.kill(int(pid), signal.SIGINT)
-            elif platform == "win32":
-                ...
+            all_started_servers = self.get_all_started_servers()
+            if all_started_servers:
+                for server in all_started_servers:
+                    if server_name in server['server_name']:
+                        os.kill(int(server['server_pid']), signal.SIGINT)
         except subprocess.CalledProcessError as e:
             errorNoServer = True
 
@@ -302,25 +303,25 @@ class VertexServerManager():
         # Wait for shutdown before the second SIGINT
         time.sleep(6)
 
-        # Second SIGINT (as required)
+        # Second SIGINT (as sometimes it is required for reasons I don't explain)
         try:
-            pidlist = check_output(["pidof","MCSServer"], universal_newlines=True).split()
-            for pid in pidlist:
-                p = psutil.Process(int(pid))
-                if server_name in p.exe():
-                    os.kill(int(pid), signal.SIGINT)
+            all_started_servers = self.get_all_started_servers()
+            if all_started_servers:
+                for server in all_started_servers:
+                    if server_name in server['server_name']:
+                        os.kill(int(server['server_pid']), signal.SIGINT)
         except subprocess.CalledProcessError as e:
             print("Info : No server found on second SIGINT, seems server has been killed on first SIGINT")
 
-        # Check that server is shtudown (don't use psutil because I want to check the path)
+        # Check that server is shutdown (don't use psutil because I want to check the path)
         try:
             serverDed = True
-            pidlist = check_output(["pidof","MCSServer"], universal_newlines=True).split()
-            for pid in pidlist:
-                p = psutil.Process(int(pid))
-                if server_name in p.exe():
-                    print("Warning : Server still alive")
-                    serverDed = True
+            all_started_servers = self.get_all_started_servers()
+            if all_started_servers:
+                for server in all_started_servers:
+                    if server_name in server['server_name']:
+                        print("Warning : Server still alive")
+                        serverDed = False
             if serverDed:
                 print(f"    ->  Server {server_name} has been shutdown")
         except subprocess.CalledProcessError as e:
