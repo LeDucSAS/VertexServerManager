@@ -7,3 +7,5 @@ vsm = VertexServerManager()
 
 
 vsm.get_all_started_servers()
+
+print(vsm.is_server_already_started("27077"))
