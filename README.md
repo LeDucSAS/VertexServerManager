@@ -10,8 +10,7 @@ License Art Libre 1.3 (https://artlibre.org/).
 > **Note**
 > About OS support
 * Linux support (tested Ubuntu 22.04.2 LTS and Python 3.10)
-* Windows - Planned
-* MacOS - Not planned yet
+* Windows support (tested Windows 10 Pro and Python 3.11.2)
 
 > **Note**
 > The script ends after executing each command, it does not run as a process persistently or a service.
