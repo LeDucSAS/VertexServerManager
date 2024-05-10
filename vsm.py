@@ -132,14 +132,36 @@ if config["list_servers"] == True:
 
 # Do server install
 if config["install_server"] == True:
-    vsm.install_game_server()
     from sys import platform
     if platform == "linux" or platform == "linux2":
-        ...
+        vsm.install_game_server()
     elif platform == "darwin":
-        print("OSX not supported right now currently")
+        print("OSX not supported.")
     elif platform == "win32":
-        ...
+        # Need to execute as admin because of symbolic linking map folder.
+        print("\n")
+        print("Windows script installation need to execute as admin because of symbolic linking map folder.")
+        print("Basically, it link a common './maps/' folder to every './servers/GameServerXXXXX/UserCreatedContent/maps/'.")
+        print("\n")
+
+        import ctypes, sys
+        def is_admin():
+            try:
+                is_admin_value = ctypes.windll.shell32.IsUserAnAdmin()
+                if not is_admin_value:
+                    print("Script will now ask for admin privilege.\n")
+                return is_admin_value
+            
+            except:
+                return False
+
+        if is_admin():
+            print("---------------------------\n")
+            print("Vertex MCS Server installation procedure starts.\n")
+            vsm.install_game_server()
+        else:
+            # Re-run the program with admin rights
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
 
 
 # Do start server by port number
