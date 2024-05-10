@@ -16,6 +16,7 @@ ARGPARSE AREA
 {
     'init'                 : False, # Boolean automatic set
     'install_server'       : False, # Boolean automatic set
+    'list_servers'         : False, # Boolean automatic set
     'start_id'             : None,  # int
     'kill_id'              : None,  # int
     'restart_id'           : None,  # int
@@ -43,6 +44,9 @@ parser = argparse.ArgumentParser( description="LeDucSAS - Vertex Server Manager"
 parser.add_argument("--init"          , action="store_true", help="Initialize the folder by creating ./cache/, ./servers/ and ./maps/ folder.")
 parser.add_argument("--install-server", action="store_true", help="Download and install a new server")
 # parser.add_argument("-v", "--verbose", action="store_true", help="Increase verbosity")
+
+# Get server status list
+parser.add_argument("-l", "--list-servers", action="store_true", help="List installed servers and execution status")
 
 # Server start, stop, restart
 parser.add_argument('-s', '--start-id'  , nargs='?', const=-1, type=int, help="Start server by port")
@@ -110,6 +114,21 @@ if config["set_server_mode"]:
 if config["init"] == True:
     vsm.create_server_folder_structure()
 
+# Do list servers
+if config["list_servers"] == True:
+    import os
+    serverList = vsm.get_server_list_only_name(os.getcwd())
+    if serverList is not None:
+        all_started_servers = vsm.get_all_started_servers()
+        print("List of installed server :")
+        for server_name in serverList:
+            server_status = "[ offline |        ]"
+            for active in all_started_servers:
+                if server_name in active["server_name"]:
+                    server_status = "[         | online ]"
+            print(f"    {server_status} - {server_name}")
+    else:
+        print("No server installed.")
 
 # Do server install
 if config["install_server"] == True:

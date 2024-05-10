@@ -106,6 +106,20 @@ vsm.py
 ~$ python3 vsm.py --install-mod https://api.mod.io/v1/games/594/mods/1780746/files/2779135/download
 ```
 
+9. You can also list the current installed servers and get their activity status with `-l` or `--list-servers`.
+```console
+~$ python .\vsm.py -l
+List of installed server :
+    [ offline |        ] - GameServer27070
+    [ offline |        ] - GameServer27071
+    [ offline |        ] - GameServer27072
+    [ offline |        ] - GameServer27073
+    [ offline |        ] - GameServer27074
+    [ offline |        ] - GameServer27075
+    [ offline |        ] - GameServer27076
+    [         | online ] - GameServer27077
+    [ offline |        ] - GameServer27078
+```
 Feedback much appreciated !
 
 Your sincerely,
