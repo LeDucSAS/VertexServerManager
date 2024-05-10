@@ -105,7 +105,12 @@ class VertexServerManager():
             for pid in pidlist:
                 p = psutil.Process(int(pid))
                 if "MCSServer" in p.exe():
-                    active_server_list.append(p.exe())
+                    server_id = p.exe().split('/')[-5]
+                    server_data = {
+                        "server_id" : server_id,
+                        "server_pid" : pid
+                    }
+                    active_server_list.append(server_data)
         elif platform == "win32":
             pidlist = check_output(["WMIC", "path", "win32_process", "get", "Caption,Processid,Commandline"], universal_newlines=True, shell=True)
             lines = pidlist.splitlines(keepends=True)
