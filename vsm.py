@@ -88,10 +88,8 @@ Command line arguments interpretation
 
 
 '''
-
 from vsm.VertexServerManager import VertexServerManager
 vsm = VertexServerManager()
-
 
 # Server parameter
 if config["set_server_name"]:
@@ -115,13 +113,14 @@ if config["init"] == True:
 
 # Do server install
 if config["install_server"] == True:
+    vsm.install_game_server()
     from sys import platform
     if platform == "linux" or platform == "linux2":
-        vsm.install_linux_game_server()
+        ...
     elif platform == "darwin":
         print("OSX not supported right now currently")
     elif platform == "win32":
-        print("Windows not supported right now currently")
+        ...
 
 
 # Do start server by port number

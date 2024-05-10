@@ -5,9 +5,13 @@ class VertexServerManager():
     """
 
     Class Structure
+    -- Global data
     Data
     def __init__(self):
+    
+    -- Base functions
     def is_folder_has_been_initialized    (self, directory_path=None):
+    def get_all_started_servers           (self):
     def is_server_already_started         (self, server_name):
     def create_symlink                    (self, symlink_source_path, symlink_target_path):
     def get_server_list_full_Path         (self, directory_path):
@@ -20,11 +24,15 @@ class VertexServerManager():
     def kill_server_by_id                 (self, server_port):
     def restart_server_by_name            (self, server_name):
     def restart_server_by_id              (self, server_port):
+    
+    -- Global functions
     def create_server_folder_structure    (self, server_init_path=None):
     def download_file_to_cache            (self, url_to_download):
     def untargz_cached_file               (self, tarGzFilePath, extractTargetPath):
     def install_linux_game_server         (self, choosen_version=None):
     def update_ini_file_value             (self, server_name, ini_filename, key_to_update, new_value):
+    
+    -- mod.io
     def install_mod                       (self, mod_url_to_download):
 
     """
@@ -514,6 +522,15 @@ class VertexServerManager():
         return key_has_been_found
 
 
+    '''
+
+
+    mod.io
+
+
+    '''
+
+
     def install_mod(self, mod_url_to_download):
         import os
         import shutil
@@ -597,3 +614,4 @@ class VertexServerManager():
         
         print(f"Success : Mod id {mod_id} with filename {filename_to_download} successfully downloaded and installed.")
         return True
+
