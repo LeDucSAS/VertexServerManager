@@ -105,9 +105,9 @@ class VertexServerManager():
             for pid in pidlist:
                 p = psutil.Process(int(pid))
                 if "MCSServer" in p.exe():
-                    server_id = p.exe().split('/')[-5]
+                    server_name = p.exe().split('/')[-5]
                     server_data = {
-                        "server_id" : server_id,
+                        "server_name" : server_name,
                         "server_pid" : pid
                     }
                     active_server_list.append(server_data)
@@ -122,50 +122,25 @@ class VertexServerManager():
                     server_pid = splitted[-1]
                     del splitted[-1] # remove pid
                     commandLine = " ".join(splitted)
-                    server_id = commandLine.split('"')[1].replace("\\", "/").split('/')[-5]
+                    server_name = commandLine.split('"')[1].replace("\\", "/").split('/')[-5]
                     server_data = {
-                        "server_id" : server_id,
+                        "server_name" : server_name,
                         "server_pid" : server_pid
                     }
                     active_server_list.append(server_data)
-        print(active_server_list)
+
         return active_server_list
 
-    def is_server_already_started(self, server_name):
-        import psutil
-        import subprocess
-        from sys import platform
-        from subprocess import check_output
-        
-        try:
-            if platform == "linux" or platform == "linux2":
-                serverDed = True
-                pidlist = check_output(["pidof","MCSServer"], universal_newlines=True).split()
-                for pid in pidlist:
-                    p = psutil.Process(int(pid))
-                    if server_name in p.exe():
-                        return True
-                if serverDed:
-                    return False
-            elif platform == "win32":
-                serverDed = True
-                pidlist = check_output(["WMIC", "path", "win32_process", "get", "Caption,Processid,Commandline"], universal_newlines=True, shell=True)
-                lines = pidlist.splitlines(keepends=True)
 
-                for line in lines:
-                    if "\Win64\MCSServer.exe" in line:
-                        splitted = " ".join(line.split()).split(" ")
-                        process = splitted[0]
-                        del splitted[0]
-                        pid = splitted[-1]
-                        del splitted[-1]
-                        commandLine = " ".join(splitted)
-                        if server_name in commandLine():
-                            return True
-                if serverDed:
-                    return False
-        except subprocess.CalledProcessError as e:
-            return False
+    def is_server_already_started(self, server_name):
+        all_started_servers = self.get_all_started_servers()
+        server_already_started = False
+        if all_started_servers:
+            for server in all_started_servers:
+                if server_name in server['server_name']:
+                    server_already_started = True
+        return server_already_started
+
 
     def create_symlink(self, symlink_source_path, symlink_target_path):
         import os
@@ -174,6 +149,7 @@ class VertexServerManager():
             os.path.abspath(symlink_target_path)
         )
         return True
+
 
     ##########
     # GET INFORMATIONS
