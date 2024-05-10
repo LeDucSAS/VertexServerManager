@@ -112,22 +112,27 @@ class VertexServerManager():
                     }
                     active_server_list.append(server_data)
         elif platform == "win32":
-            pidlist = check_output(["WMIC", "path", "win32_process", "get", "Caption,Processid,Commandline"], universal_newlines=True, shell=True)
+            pidlist = check_output(
+                ["WMIC", "path", "win32_process", "get", "Caption,Processid,Commandline"], 
+                universal_newlines=True, 
+                shell=True)
             lines = pidlist.splitlines(keepends=True)
 
             for line in lines:
                 if "\Win64\MCSServer.exe" in line:
-                    splitted = " ".join(line.split()).split(" ")
-                    del splitted[0] # remove process
-                    server_pid = splitted[-1]
-                    del splitted[-1] # remove pid
-                    commandLine = " ".join(splitted)
-                    server_name = commandLine.split('"')[1].replace("\\", "/").split('/')[-5]
-                    server_data = {
-                        "server_name" : server_name,
-                        "server_pid" : server_pid
-                    }
-                    active_server_list.append(server_data)
+                    splitted_line = " ".join(line.replace("\\", "/").split()).split(" ")
+                    if "MCSServer.exe" in splitted_line[0]:
+                        serverpath = ""
+                        for item in splitted_line:
+                            if "/VertexServerManager/" in item:
+                                serverpath = item
+                        server_pid = splitted_line[-1]
+                        server_name = serverpath.split('/')[-5]
+                        server_data = {
+                            "server_name" : server_name,
+                            "server_pid" : server_pid
+                        }
+                        active_server_list.append(server_data)
 
         return active_server_list
 
@@ -234,13 +239,17 @@ class VertexServerManager():
             serverBinaryPath = f"./servers/{server_name}/MCS/Binaries/Linux/MCSServer"
         elif platform == "win32":
             serverBinaryPath = f"./servers/{server_name}/MCS/Binaries/Win64/MCSServer.exe"
-
+        
         serverBinaryPath = os.path.abspath(serverBinaryPath)
-        execution_string = f"{serverBinaryPath} {self.DATA['gameServerMap']}?game={self.DATA['gameServerMode']} -port={self.DATA['gameServer_port']} -servername='{self.DATA['gameServer_name']}'"
+        argument_map = self.DATA['gameServerMap']
+        argument_gamemode = self.DATA['gameServerMode']
+        argument_port = self.DATA['gameServer_port']
+        argument_gamename = self.DATA['gameServer_name']
 
         if platform == "linux" or platform == "linux2":
+            server_arguments = f"{argument_map}?game={argument_gamemode} -port={argument_port} -servername='{argument_gamename}'"
             server = subprocess.Popen([
-                execution_string
+                f"{serverBinaryPath} {server_arguments}"
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -248,10 +257,17 @@ class VertexServerManager():
         elif platform == "win32":
             DETACHED_PROCESS = 0x00000008
             server = subprocess.Popen([
-                execution_string
+                serverBinaryPath, 
+                f"{argument_map}?game={argument_gamemode}",
+                f"-port={argument_port}",
+                f"-servername='{argument_gamename}'"
             ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             creationflags=DETACHED_PROCESS,
             shell=True)
+            import time
+            time.sleep(6)
         
 
         print(f"    ->  Server {server_name} has been started")
