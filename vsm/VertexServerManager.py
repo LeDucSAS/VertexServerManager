@@ -93,19 +93,72 @@ class VertexServerManager():
         else:
             return False
 
-    def is_server_already_started(self, server_name):
+    def get_all_started_servers(self):
         import psutil
-        import subprocess
+        from sys import platform
         from subprocess import check_output
-        try:
-            serverDed = True
+
+        active_server_list = []
+
+        if platform == "linux" or platform == "linux2":
             pidlist = check_output(["pidof","MCSServer"], universal_newlines=True).split()
             for pid in pidlist:
                 p = psutil.Process(int(pid))
-                if server_name in p.exe():
-                    return True
-            if serverDed:
-                return False
+                if "MCSServer" in p.exe():
+                    active_server_list.append(p.exe())
+        elif platform == "win32":
+            pidlist = check_output(["WMIC", "path", "win32_process", "get", "Caption,Processid,Commandline"], universal_newlines=True, shell=True)
+            lines = pidlist.splitlines(keepends=True)
+
+            for line in lines:
+                if "\Win64\MCSServer.exe" in line:
+                    splitted = " ".join(line.split()).split(" ")
+                    del splitted[0] # remove process
+                    server_pid = splitted[-1]
+                    del splitted[-1] # remove pid
+                    commandLine = " ".join(splitted)
+                    server_id = commandLine.split('"')[1].replace("\\", "/").split('/')[-5]
+                    server_data = {
+                        "server_id" : server_id,
+                        "server_pid" : server_pid
+                    }
+                    active_server_list.append(server_data)
+        print(active_server_list)
+        return active_server_list
+
+    def is_server_already_started(self, server_name):
+        import psutil
+        import subprocess
+        from sys import platform
+        from subprocess import check_output
+        
+        try:
+            if platform == "linux" or platform == "linux2":
+                serverDed = True
+                pidlist = check_output(["pidof","MCSServer"], universal_newlines=True).split()
+                for pid in pidlist:
+                    p = psutil.Process(int(pid))
+                    if server_name in p.exe():
+                        return True
+                if serverDed:
+                    return False
+            elif platform == "win32":
+                serverDed = True
+                pidlist = check_output(["WMIC", "path", "win32_process", "get", "Caption,Processid,Commandline"], universal_newlines=True, shell=True)
+                lines = pidlist.splitlines(keepends=True)
+
+                for line in lines:
+                    if "\Win64\MCSServer.exe" in line:
+                        splitted = " ".join(line.split()).split(" ")
+                        process = splitted[0]
+                        del splitted[0]
+                        pid = splitted[-1]
+                        del splitted[-1]
+                        commandLine = " ".join(splitted)
+                        if server_name in commandLine():
+                            return True
+                if serverDed:
+                    return False
         except subprocess.CalledProcessError as e:
             return False
 
@@ -174,14 +227,15 @@ class VertexServerManager():
             directory_path = os.getcwd()
 
         gameServerList = self.get_server_list_full_Path(directory_path)
-        if gameServerList is not None:
-            tmp = []
-            for server in gameServerList:
-                tmp.append(int(re.sub('[^0-9]','', server)))
-            tmp.sort()
-            return int(tmp[-1])
-        else:
+
+        if gameServerList is None or not gameServerList:
             return None
+
+        tmp = []
+        for server in gameServerList:
+            tmp.append(int(re.sub('[^0-9]','', server)))
+        tmp.sort()
+        return int(tmp[-1])
 
 
     ##########
@@ -189,16 +243,36 @@ class VertexServerManager():
     def start_server_by_name(self, server_name):
         import subprocess
         import re
+        import os
+        from sys import platform
 
         if int(self.DATA['gameServer_port']) < 1:
             self.DATA['gameServer_port'] = re.sub('[^0-9]','', server_name)
-        
-        server = subprocess.Popen([
-                f"./servers/{server_name}/MCS/Binaries/Linux/MCSServer {self.DATA['gameServerMap']}?game={self.DATA['gameServerMode']} -port={self.DATA['gameServer_port']} -servername='{self.DATA['gameServer_name']}'"
+
+        if platform == "linux" or platform == "linux2":
+            serverBinaryPath = f"./servers/{server_name}/MCS/Binaries/Linux/MCSServer"
+        elif platform == "win32":
+            serverBinaryPath = f"./servers/{server_name}/MCS/Binaries/Win64/MCSServer.exe"
+
+        serverBinaryPath = os.path.abspath(serverBinaryPath)
+        execution_string = f"{serverBinaryPath} {self.DATA['gameServerMap']}?game={self.DATA['gameServerMode']} -port={self.DATA['gameServer_port']} -servername='{self.DATA['gameServer_name']}'"
+
+        if platform == "linux" or platform == "linux2":
+            server = subprocess.Popen([
+                execution_string
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             shell=True)
+        elif platform == "win32":
+            DETACHED_PROCESS = 0x00000008
+            server = subprocess.Popen([
+                execution_string
+            ],
+            creationflags=DETACHED_PROCESS,
+            shell=True)
+        
+
         print(f"    ->  Server {server_name} has been started")
         return server.pid
 
@@ -224,15 +298,19 @@ class VertexServerManager():
         import subprocess
         import time
         from subprocess import check_output
-
+        print(server_name)
         errorNoServer = False
         # First SIGINT
         try:
-            pidlist = check_output(["pidof","MCSServer"], universal_newlines=True).split()
-            for pid in pidlist:
-                p = psutil.Process(int(pid))
-                if server_name in p.exe():
-                    os.kill(int(pid), signal.SIGINT)
+            from sys import platform
+            if platform == "linux" or platform == "linux2":
+                pidlist = check_output(["pidof","MCSServer"], universal_newlines=True).split()
+                for pid in pidlist:
+                    p = psutil.Process(int(pid))
+                    if server_name in p.exe():
+                        os.kill(int(pid), signal.SIGINT)
+            elif platform == "win32":
+                ...
         except subprocess.CalledProcessError as e:
             errorNoServer = True
 
@@ -283,6 +361,7 @@ class VertexServerManager():
         from subprocess import check_output
 
         pidlist = check_output(["pidof", "MCSServer"], universal_newlines=True).split()
+        # serverList = self.get_server_list_only_name(os.getcwd())
         if serverList is not None:
             for pid in pidlist:
                 p = psutil.Process(int(pid))
@@ -336,9 +415,10 @@ class VertexServerManager():
             os.makedirs(cache_folder_path)
 
             print("    ->  Current directory has been init for vertex servers")
-        else:    
-            print("    ->  Init require an empty directory (except server-manager script)")
-            print("    ->  Current directory is not empty")
+        else:
+            print("    ->  Seems directory has already been initialized")
+            print("    ->  Please check for existence for ./maps/, ./servers/, ./cache/ and ./vsm/ folders")
+            print("    ->  If init has failed, please remove all folders but ./vsm/")
             print("    ->  Init will stop")
 
 
@@ -361,8 +441,14 @@ class VertexServerManager():
         fileExtractor.extractall(extractTargetPath)
         fileExtractor.close()
 
+        
+    def unzip_cached_file(self, zipFilePath, extractTargetPath):
+        import zipfile
+        with zipfile.ZipFile(zipFilePath, 'r') as zip_ref:
+            zip_ref.extractall(extractTargetPath)
 
-    def install_linux_game_server(self, choosen_version=None):
+
+    def install_game_server(self, choosen_version=None):
         import copy
         import os
         import psutil
@@ -370,16 +456,28 @@ class VertexServerManager():
         import stat
         import subprocess
         import time
+        from sys import platform
 
         global DATA
+        
+        if platform == "linux" or platform == "linux2":
+            ...
+        elif platform == "darwin":
+            print("OSX not supported right now currently")
+        elif platform == "win32":
+            ...
+
 
         if choosen_version is None:
             import requests
             response = requests.get(self.DATA['apiVersion'])
             choosen_version = response.json()['version']
-
-        url_to_download = copy.copy(self.DATA['fileVertexServerFullLinux']).replace("<VERSION>", choosen_version)
-
+        
+        if platform == "linux" or platform == "linux2":
+            url_to_download = copy.copy(self.DATA['fileVertexServerFullLinux']).replace("<VERSION>", choosen_version)
+        elif platform == "win32":
+            url_to_download = copy.copy(self.DATA['fileVertexServerFullWindows']).replace("<VERSION>", choosen_version)
+        
 
         ############################################################
         # Check init, download, unzip, clean cache
@@ -393,7 +491,12 @@ class VertexServerManager():
         print("    ->  Done")
 
         print("Extracting server archive file into ./cache/")
-        self.untargz_cached_file(downloaded_file_path, './cache')
+        
+        if platform == "linux" or platform == "linux2":
+            self.untargz_cached_file(downloaded_file_path, './cache')
+        elif platform == "win32":
+            self.unzip_cached_file(downloaded_file_path, './cache')
+        
         print("    ->  Done")
 
         print("Deleting downloaded file from ./cache/")
@@ -409,9 +512,16 @@ class VertexServerManager():
         else:
             new_server_number += 1
         new_server_name = copy.copy(self.DATA['server_nameTemplate']).replace("<NUMBER>", str(new_server_number))
+        print(f"New server name will be : {new_server_name}")
+        
         # Move files
         print("Move server file to ./servers/")
-        server_source = "./cache/launcher/files/mcs_server_linux/Server"
+        
+        if platform == "linux" or platform == "linux2":
+            server_source = "./cache/launcher/files/mcs_server_linux/Server"
+        elif platform == "win32":
+            server_source = "./cache/Server"
+        
         server_destination = f"./servers/{new_server_name}"
         shutil.move(server_source, server_destination)
         print("    ->  Done")
@@ -419,16 +529,19 @@ class VertexServerManager():
 
         ############################################################
         # Remove useless files from cache
-        print("Clean ./cache/ from useless files")
-        shutil.rmtree('./cache/launcher/')
-        print("    ->  Done")
         
+        if platform == "linux" or platform == "linux2":
+            print("Clean ./cache/ from useless files")
+            shutil.rmtree('./cache/launcher/')
+            print("    ->  Done")
 
+        
         ############################################################
         # Make server binary executable
-        linux_binary = f"./servers/{new_server_name}/MCS/Binaries/Linux/MCSServer"
-        st = os.stat(linux_binary)
-        os.chmod(linux_binary, st.st_mode | stat.S_IEXEC)
+        if platform == "linux" or platform == "linux2":
+            linux_binary = f"./servers/{new_server_name}/MCS/Binaries/Linux/MCSServer"
+            st = os.stat(linux_binary)
+            os.chmod(linux_binary, st.st_mode | stat.S_IEXEC)
 
 
         ############################################################
@@ -561,7 +674,16 @@ class VertexServerManager():
             print(invalid_provided_url_error_message)
             return False
 
-        real_mod_url = urlopen(mod_url_to_download).geturl()
+        print(f"    Checking URL '{mod_url_to_download}' ...")
+        # real_mod_url = urlopen(mod_url_to_download).geturl()
+        
+        import requests
+
+        url = requests.get(mod_url_to_download)
+        htmltext = url.text
+        print(htmltext)
+
+        real_mod_url = "https://binary.modcdn.io/mods/c9d5/1049908/kyleball-client.zip?verify=1713904215-2Ng7SEzuKyyYXukbzV83RBT5m9oVC2E3ADFyix5p8DI%3D"
         print(f"    Found real file location as '{real_mod_url}'")
 
         if(urlopen(real_mod_url).getheader('Content-Type') != "application/zip"):
