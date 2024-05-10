@@ -570,7 +570,7 @@ class VertexServerManager():
         ############################################################
         # Make symlink to add map folder to gameserver to optimize spacedisk
         print("Make symlink of ./maps/ inside UserCreatedContent")
-
+        # That is the part that requires having Admin rights
         symlink_has_been_created = self.create_symlink("./maps/", f"./servers/{new_server_name}/MCS/UserCreatedContent/maps/")
         if symlink_has_been_created:
             print("    ->  Done")
