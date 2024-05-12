@@ -5,6 +5,8 @@
 from sys import platform
 if platform == "darwin":
     print("MacOS/OSX not supported since no version exists or is planned for it.")
+    print("Script will terminate.")
+    sys.exit() 
 
 '''
 
