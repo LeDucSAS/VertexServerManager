@@ -2,6 +2,9 @@
 # LeDucSAS - Vertex Server Manager (VSM)
 # License : Free art license 1.3 https://artlibre.org/
 
+from sys import platform
+if platform == "darwin":
+    print("MacOS/OSX not supported since no version exists or is planned for it.")
 
 '''
 
@@ -135,8 +138,6 @@ if config["install_server"] == True:
     from sys import platform
     if platform == "linux" or platform == "linux2":
         vsm.install_game_server()
-    elif platform == "darwin":
-        print("OSX not supported.")
     elif platform == "win32":
         # Need to execute as admin because of symbolic linking map folder.
         print("\n")
