@@ -408,14 +408,28 @@ class VertexServerManager():
             server_folder_path = f"{server_init_path}/servers"
             cache_folder_path  = f"{server_init_path}/cache"
 
-            os.makedirs(map_folder_path)
-            os.makedirs(server_folder_path)
-            os.makedirs(cache_folder_path)
+            folders_to_create = []
+            folders_to_create.append(map_folder_path)
+            folders_to_create.append(server_folder_path)
+            folders_to_create.append(cache_folder_path)
 
-            print("    ->  Current directory has been init for vertex servers")
+            for ftc in folders_to_create:
+                if not os.path.exists(ftc):
+                    print(f"    Creating - {ftc}")
+                    os.makedirs(ftc)
+                else:
+                    print(f"    Already exists - {ftc}")
+
+            print("    ->  Current directory has been init for vertex servers.")
         else:
             print("    ->  Seems directory has already been initialized")
-            print("    ->  Please check for existence for ./maps/, ./servers/, ./cache/ and ./vsm/ folders")
+            print("    ->  Please check for existence for the fallowing folders")
+            print("            ./maps/")
+            print("            ./servers/")
+            print("            ./cache/")
+            print("            ./donotdelete/")
+            print("            ./donotdelete/maps/ (which content equals ./maps/)")
+            print("            ./vsm/")
             print("    ->  If init has failed, please remove all folders but ./vsm/")
             print("    ->  Init will stop")
 
@@ -482,6 +496,7 @@ class VertexServerManager():
         folder_has_been_init = self.is_folder_has_been_initialized(os.getcwd())
         if not folder_has_been_init:
             print("Warning : Folder has not been init, script will stop.")
+            print("You can init the folder doing like : python ./vsm.py --init")
             return
 
         print("Downloading server archive to ./cache/ ...")
@@ -576,7 +591,9 @@ class VertexServerManager():
             print("    ->  Done")
         else:
             print("    ->  Error")
-
+        print("\n----------\n")
+        print(f"Server installation has finished for {new_server_name}.")
+        print("\n----------\n")
 
     def update_ini_file_value(self, server_name, ini_filename, key_to_update, new_value):
         import configparser
@@ -650,6 +667,7 @@ class VertexServerManager():
 
         if not self.is_folder_has_been_initialized(os.getcwd()):
             print("Warning : Folder has not been init, script will stop.")
+            print("You can init the folder doing like : python ./vsm.py --init")
             return
 
         print("Checking URL...")
