@@ -65,7 +65,7 @@ class VertexServerManager():
     DATA['gameServerMap']       = "P_FFA_COMPLEX"
     DATA['gameServerMode']      = "OPEN"
     DATA['gameServer_port']     = -1
-    DATA['gameServer_name']     = "You forgot to setup my server name"
+    DATA['gameServer_gamename'] = "Vertex Server"
 
 
 
