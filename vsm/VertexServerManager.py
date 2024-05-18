@@ -157,7 +157,8 @@ class VertexServerManager():
                             "server_mode"      : splitted_line[2].split("=")[1],
                             "server_map"       : splitted_line[2].split("?")[0],
                             "server_port"      : splitted_line[3].split("=")[1],
-                            "server_gamename"  : splitted_line[4].split("=")[1]
+                            "server_gamename"  : ' '.join(splitted_line[4:-1]).split("=")[1].replace("\"","").replace("'","")
+                            # "server_gamename"  : ' '.join(splitted_line[4:-1]).split("=")[1][1:-2]
                         }
                         active_server_list.append(server_data)
 
@@ -257,6 +258,8 @@ class VertexServerManager():
         import re
         import os
         from sys import platform
+        
+        print(f"    ->  Starting server {server_localname} ...")
 
         if int(self.DATA['gameServer_port']) < 1:
             self.DATA['gameServer_port'] = re.sub('[^0-9]','', server_localname)
@@ -294,9 +297,12 @@ class VertexServerManager():
             shell=True)
             import time
             time.sleep(6)
-        
 
         print(f"    ->  Server {server_localname} has been started")
+        print(f"    ->    Port      - {argument_port}")
+        print(f"    ->    Game name - {argument_gamename}")
+        print(f"    ->    Mode      - {argument_gamemode}")
+        print(f"    ->    Map       - {argument_map}")
         return server.pid
 
     def start_server_by_id(self, server_port):
@@ -321,10 +327,12 @@ class VertexServerManager():
         import subprocess
         import time
         from subprocess import check_output
+        
+        print(f"    ->  Shutdowning server {server_localname} ...")
 
         server_is_active = self.is_server_already_started(server_localname)
         if not server_is_active:
-            print(f"    -> Server {server_localname} is not currently active.")
+            print(f"    ->  Server {server_localname} is not currently active.")
             return
 
         errorNoServer = False
@@ -365,7 +373,7 @@ class VertexServerManager():
                         print("Warning : Server still alive")
                         serverDed = False
             if serverDed:
-                print(f"    -> Server {server_localname} has been shutdown")
+                print(f"    ->  Server {server_localname} has been shutdown")
         except subprocess.CalledProcessError as e:
             print(f"    ->  Server {server_localname} has been shutdown")
 
@@ -385,23 +393,15 @@ class VertexServerManager():
         import os
         from subprocess import check_output
 
-        pidlist = check_output(["pidof", "MCSServer"], universal_newlines=True).split()
-        serverList = self.get_server_list_only_localname(os.getcwd())
-        print(pidlist)
-        if serverList is not None:
-            for pid in pidlist:
-                p = psutil.Process(int(pid))
-                if server_localname in p.exe():
-                    liveServerArgs = p.cmdline()
-                    for arg in liveServerArgs:
-                        if "-port=" in arg:
-                            self.DATA['gameServer_port'] = arg.split("=")[1]
-                        if "game=" in arg:
-                            self.DATA['gameServerMode'] = arg.split("=")[1]
-                        if "?" in arg:
-                            self.DATA['gameServerMap'] = arg.split("?")[0]
-                        if "-servername=" in arg:
-                            self.DATA['gameServer_gamename'] = arg.split("=")[1]
+        fullServerList = self.get_server_list_only_localname(os.getcwd())
+        if fullServerList is not None:
+            startedServerList = self.get_all_started_servers()
+            for startedServer in startedServerList:
+                if server_localname in startedServer["server_localname"]:
+                    self.DATA['gameServer_port'] = startedServer["server_port"]
+                    self.DATA['gameServerMode'] = startedServer["server_mode"]
+                    self.DATA['gameServerMap'] = startedServer["server_map"]
+                    self.DATA['gameServer_gamename'] = startedServer["server_gamename"]
 
                     self.kill_server_by_localname(server_localname)
                     time.sleep(1)
