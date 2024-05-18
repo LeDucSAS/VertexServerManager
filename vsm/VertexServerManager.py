@@ -12,17 +12,17 @@ class VertexServerManager():
     -- Base functions
     def is_folder_has_been_initialized    (self, directory_path=None):
     def get_all_started_servers           (self):
-    def is_server_already_started         (self, server_name):
+    def is_server_already_started         (self, server_localname):
     def create_symlink                    (self, symlink_source_path, symlink_target_path):
     def get_server_list_full_Path         (self, directory_path):
-    def get_server_list_only_name         (self, directory_path=None):
-    def find_server_name_by_id            (self, server_port):
+    def get_server_list_only_localname    (self, directory_path=None):
+    def find_server_localname_by_id       (self, server_port):
     def get_current_highest_gameserver_id (self, directory_path=None):
-    def start_server_by_name              (self, server_name):
+    def start_server_by_localname         (self, server_localname):
     def start_server_by_id                (self, server_port):
-    def kill_server_by_name               (self, server_name):
+    def kill_server_by_localname          (self, server_localname):
     def kill_server_by_id                 (self, server_port):
-    def restart_server_by_name            (self, server_name):
+    def restart_server_by_localname       (self, server_localname):
     def restart_server_by_id              (self, server_port):
     
     -- Global functions
@@ -30,7 +30,7 @@ class VertexServerManager():
     def download_file_to_cache            (self, url_to_download):
     def untargz_cached_file               (self, tarGzFilePath, extractTargetPath):
     def install_linux_game_server         (self, choosen_version=None):
-    def update_ini_file_value             (self, server_name, ini_filename, key_to_update, new_value):
+    def update_ini_file_value             (self, server_localname, ini_filename, key_to_update, new_value):
     
     -- mod.io
     def install_mod                       (self, mod_url_to_download):
@@ -59,7 +59,7 @@ class VertexServerManager():
     DATA['apiStats']            = f"{DATA['apiRoot']}/stats"
     DATA['apiVersion']          = f"{DATA['apiRoot']}/version"
 
-    DATA['server_nameTemplate'] = "GameServer<NUMBER>"
+    DATA['server_localnameTemplate'] = "GameServer<NUMBER>"
     DATA['defaultStartingPort'] = 27070
 
     DATA['gameServerMap']       = "P_FFA_COMPLEX"
@@ -136,7 +136,6 @@ class VertexServerManager():
                 universal_newlines=True, 
                 shell=True)
             lines = pidlist.splitlines(keepends=True)
-
             for line in lines:
                 if "\Win64\MCSServer.exe" in line:
                     splitted_line = " ".join(line.replace("\\", "/").split()).split(" ")
@@ -146,10 +145,9 @@ class VertexServerManager():
                             if "/VertexServerManager/" in item:
                                 serverpath = item
                         server_pid = splitted_line[-1]
-                        server_name = serverpath.split('/')[-5]
+                        server_localname = serverpath.split('/')[-5]
                         server_data = {
-                            "server_name" : server_name,
-                            "server_pid" : server_pid
+                            "server_localname" : server_localname,
                             "server_pid"       : server_pid,
                             "server_mode"      : splitted_line[2].split("=")[1],
                             "server_map"       : splitted_line[2].split("?")[0],
@@ -161,12 +159,12 @@ class VertexServerManager():
         return active_server_list
 
 
-    def is_server_already_started(self, server_name):
+    def is_server_already_started(self, server_localname):
         all_started_servers = self.get_all_started_servers()
         server_already_started = False
         if all_started_servers:
             for server in all_started_servers:
-                if server_name in server['server_name']:
+                if server_localname in server['server_localname']:
                     server_already_started = True
         return server_already_started
 
@@ -197,7 +195,7 @@ class VertexServerManager():
         else:
             return None
 
-    def get_server_list_only_name(self, directory_path=None):
+    def get_server_list_only_localname(self, directory_path=None):
         import os
         import re
 
@@ -208,24 +206,23 @@ class VertexServerManager():
         if gameServerList is not None:
             tmp = []
             for server in gameServerList:
-
                 tmp.append(server.split("/")[-1])
             tmp.sort()
             return tmp
         else:
             return None
 
-    def find_server_name_by_id(self, server_port):
+    def find_server_localname_by_id(self, server_port):
         import os
         directory_path = os.getcwd()
-        serverList = self.get_server_list_only_name(directory_path)
-        has_server_name_been_found = False
+        serverList = self.get_server_list_only_localname(directory_path)
+        has_server_localname_been_found = False
         if serverList is not None:
-            for server_name in serverList:
-                if server_name.endswith(str(server_port)):
-                    has_server_name_been_found = True
-                    return server_name
-        if not has_server_name_been_found:
+            for server_localname in serverList:
+                if server_localname.endswith(str(server_port)):
+                    has_server_localname_been_found = True
+                    return server_localname
+        if not has_server_localname_been_found:
             return None
 
 
@@ -250,25 +247,25 @@ class VertexServerManager():
 
     ##########
     # START SERVER
-    def start_server_by_name(self, server_name):
+    def start_server_by_localname(self, server_localname):
         import subprocess
         import re
         import os
         from sys import platform
 
         if int(self.DATA['gameServer_port']) < 1:
-            self.DATA['gameServer_port'] = re.sub('[^0-9]','', server_name)
+            self.DATA['gameServer_port'] = re.sub('[^0-9]','', server_localname)
 
         if platform == "linux" or platform == "linux2":
-            serverBinaryPath = f"./servers/{server_name}/MCS/Binaries/Linux/MCSServer"
+            serverBinaryPath = f"./servers/{server_localname}/MCS/Binaries/Linux/MCSServer"
         elif platform == "win32":
-            serverBinaryPath = f"./servers/{server_name}/MCS/Binaries/Win64/MCSServer.exe"
+            serverBinaryPath = f"./servers/{server_localname}/MCS/Binaries/Win64/MCSServer.exe"
         
         serverBinaryPath = os.path.abspath(serverBinaryPath)
         argument_map = self.DATA['gameServerMap']
         argument_gamemode = self.DATA['gameServerMode']
         argument_port = self.DATA['gameServer_port']
-        argument_gamename = self.DATA['gameServer_name']
+        argument_gamename = self.DATA['gameServer_gamename']
 
         if platform == "linux" or platform == "linux2":
             server_arguments = f"{argument_map}?game={argument_gamemode} -port={argument_port} -servername='{argument_gamename}'"
@@ -294,25 +291,25 @@ class VertexServerManager():
             time.sleep(6)
         
 
-        print(f"    ->  Server {server_name} has been started")
+        print(f"    ->  Server {server_localname} has been started")
         return server.pid
 
     def start_server_by_id(self, server_port):
-        server_name = self.find_server_name_by_id(server_port)
+        server_localname = self.find_server_localname_by_id(server_port)
 
-        if server_name is not None:
-            if not self.is_server_already_started(server_name):
-                server_pid = self.start_server_by_name(server_name)
-                print(f"    ->  Server {server_name} started with pid {server_pid}")
+        if server_localname is not None:
+            if not self.is_server_already_started(server_localname):
+                server_pid = self.start_server_by_localname(server_localname)
+                print(f"    ->  Server {server_localname} started with pid {server_pid}")
             else:
-                print(f"    ->  Server {server_name} already started.")
+                print(f"    ->  Server {server_localname} already started.")
         else:
             print(f"    ->  No server found with id {server_port}")
 
 
     ##########
     # STOP SERVER 
-    def kill_server_by_name(self, server_name):
+    def kill_server_by_localname(self, server_localname):
         import os
         import psutil
         import signal
@@ -320,9 +317,9 @@ class VertexServerManager():
         import time
         from subprocess import check_output
 
-        server_is_active = self.is_server_already_started(server_name)
+        server_is_active = self.is_server_already_started(server_localname)
         if not server_is_active:
-            print(f"    -> Server {server_name} is not currently active.")
+            print(f"    -> Server {server_localname} is not currently active.")
             return
 
         errorNoServer = False
@@ -331,7 +328,7 @@ class VertexServerManager():
             all_started_servers = self.get_all_started_servers()
             if all_started_servers:
                 for server in all_started_servers:
-                    if server_name in server['server_name']:
+                    if server_localname in server['server_localname']:
                         os.kill(int(server['server_pid']), signal.SIGINT)
         except subprocess.CalledProcessError as e:
             errorNoServer = True
@@ -348,7 +345,7 @@ class VertexServerManager():
             all_started_servers = self.get_all_started_servers()
             if all_started_servers:
                 for server in all_started_servers:
-                    if server_name in server['server_name']:
+                    if server_localname in server['server_localname']:
                         os.kill(int(server['server_pid']), signal.SIGINT)
         except subprocess.CalledProcessError as e:
             print("Info : No server found on second SIGINT, seems server has been killed on first SIGINT")
@@ -359,35 +356,37 @@ class VertexServerManager():
             all_started_servers = self.get_all_started_servers()
             if all_started_servers:
                 for server in all_started_servers:
-                    if server_name in server['server_name']:
+                    if server_localname in server['server_localname']:
                         print("Warning : Server still alive")
                         serverDed = False
             if serverDed:
-                print(f"    ->  Server {server_name} has been shutdown")
+                print(f"    -> Server {server_localname} has been shutdown")
         except subprocess.CalledProcessError as e:
-            print(f"    ->  Server {server_name} has been shutdown")
+            print(f"    ->  Server {server_localname} has been shutdown")
 
     def kill_server_by_id(self, server_port):
-        server_name = self.find_server_name_by_id(server_port)
+        server_localname = self.find_server_localname_by_id(server_port)
 
-        if server_name is not None:
-            print(f"Killing server {server_name}...")
-            server_pid = self.kill_server_by_name(server_name)
+        if server_localname is not None:
+            print(f"Killing server {server_localname}...")
+            server_pid = self.kill_server_by_localname(server_localname)
         else:
             print(f"No server found with id {server_port}")
 
     # RESTART
-    def restart_server_by_name(self, server_name):
+    def restart_server_by_localname(self, server_localname):
         import time
         import psutil
+        import os
         from subprocess import check_output
 
         pidlist = check_output(["pidof", "MCSServer"], universal_newlines=True).split()
-        # serverList = self.get_server_list_only_name(os.getcwd())
+        serverList = self.get_server_list_only_localname(os.getcwd())
+        print(pidlist)
         if serverList is not None:
             for pid in pidlist:
                 p = psutil.Process(int(pid))
-                if server_name in p.exe():
+                if server_localname in p.exe():
                     liveServerArgs = p.cmdline()
                     for arg in liveServerArgs:
                         if "-port=" in arg:
@@ -397,17 +396,17 @@ class VertexServerManager():
                         if "?" in arg:
                             self.DATA['gameServerMap'] = arg.split("?")[0]
                         if "-servername=" in arg:
-                            self.DATA['gameServer_name'] = arg.split("=")[1]
+                            self.DATA['gameServer_gamename'] = arg.split("=")[1]
 
-                    self.kill_server_by_name(server_name)
+                    self.kill_server_by_localname(server_localname)
                     time.sleep(1)
-                    self.start_server_by_name(server_name)
+                    self.start_server_by_localname(server_localname)
         else:
             print("No server installed.")
 
 
     def restart_server_by_id(self, server_port):
-        self.restart_server_by_name(self.find_server_name_by_id(server_port))
+        self.restart_server_by_localname(self.find_server_localname_by_id(server_port))
 
 
 
@@ -548,8 +547,8 @@ class VertexServerManager():
             new_server_number = self.DATA['defaultStartingPort']
         else:
             new_server_number += 1
-        new_server_name = copy.copy(self.DATA['server_nameTemplate']).replace("<NUMBER>", str(new_server_number))
-        print(f"New server name will be : {new_server_name}")
+        new_server_localname = copy.copy(self.DATA['server_localnameTemplate']).replace("<NUMBER>", str(new_server_number))
+        print(f"New server name will be : {new_server_localname}")
         
         # Move files
         print("Move server file to ./servers/")
@@ -559,7 +558,7 @@ class VertexServerManager():
         elif platform == "win32":
             server_source = "./cache/Server"
         
-        server_destination = f"./servers/{new_server_name}"
+        server_destination = f"./servers/{new_server_localname}"
         shutil.move(server_source, server_destination)
         print("    ->  Done")
 
@@ -576,7 +575,7 @@ class VertexServerManager():
         ############################################################
         # Make server binary executable
         if platform == "linux" or platform == "linux2":
-            linux_binary = f"./servers/{new_server_name}/MCS/Binaries/Linux/MCSServer"
+            linux_binary = f"./servers/{new_server_localname}/MCS/Binaries/Linux/MCSServer"
             st = os.stat(linux_binary)
             os.chmod(linux_binary, st.st_mode | stat.S_IEXEC)
 
@@ -584,7 +583,7 @@ class VertexServerManager():
         ############################################################
         # Start server
         print("Make first server start to generate conf files etc.")
-        server_pid = self.start_server_by_name(new_server_name)
+        server_pid = self.start_server_by_localname(new_server_localname)
 
         if psutil.pid_exists(server_pid):
             print("    ->  Server has started correctly")
@@ -603,29 +602,29 @@ class VertexServerManager():
         # Kill the server nicely to force save of config files
 
         print("Shutting down the server properly")
-        self.kill_server_by_name(new_server_name)
+        self.kill_server_by_localname(new_server_localname)
 
 
         ############################################################
         # Make symlink to add map folder to gameserver to optimize spacedisk
         print("Make symlink of ./maps/ inside UserCreatedContent")
         # That is the part that requires having Admin rights
-        symlink_has_been_created = self.create_symlink("./maps/", f"./servers/{new_server_name}/MCS/UserCreatedContent/maps/")
+        symlink_has_been_created = self.create_symlink("./maps/", f"./servers/{new_server_localname}/MCS/UserCreatedContent/maps/")
         if symlink_has_been_created:
             print("    ->  Done")
         else:
             print("    ->  Error")
         print("\n----------\n")
-        print(f"Server installation has finished for {new_server_name}.")
+        print(f"Server installation has finished for {new_server_localname}.")
         print("\n----------\n")
 
-    def update_ini_file_value(self, server_name, ini_filename, key_to_update, new_value):
+    def update_ini_file_value(self, server_localname, ini_filename, key_to_update, new_value):
         import configparser
         import os
         import ast
         
-        ini_file_path = "./servers/<SERVER_NAME>/MCS/Saved/Config/LinuxServer/<INI_FILENAME>"
-        ini_file_path = ini_file_path.replace("<SERVER_NAME>", server_name)
+        ini_file_path = "./servers/<SERVER_LOCALNAME>/MCS/Saved/Config/LinuxServer/<INI_FILENAME>"
+        ini_file_path = ini_file_path.replace("<SERVER_LOCALNAME>", server_localname)
         ini_file_path = ini_file_path.replace("<INI_FILENAME>", ini_filename)
 
         if not os.path.exists(ini_file_path):
