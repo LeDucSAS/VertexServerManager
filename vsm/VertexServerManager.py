@@ -95,6 +95,7 @@ class VertexServerManager():
 
     def get_all_started_servers(self):
         import psutil
+        import os
         from sys import platform
         from subprocess import check_output
 
@@ -102,15 +103,33 @@ class VertexServerManager():
 
         if platform == "linux" or platform == "linux2":
             pidlist = check_output(["pidof","MCSServer"], universal_newlines=True).split()
-            for pid in pidlist:
-                p = psutil.Process(int(pid))
-                if "MCSServer" in p.exe():
-                    server_name = p.exe().split('/')[-5]
-                    server_data = {
-                        "server_name" : server_name,
-                        "server_pid" : pid
-                    }
-                    active_server_list.append(server_data)
+            serverList = self.get_server_list_only_localname(os.getcwd())
+
+            if serverList is not None:
+                for pid in pidlist:
+                    p = psutil.Process(int(pid))
+                    if "MCSServer" in p.exe():
+                        liveServerArgs = p.cmdline()
+                        for arg in liveServerArgs:
+                            if "-port=" in arg:
+                                server_port = arg.split("=")[1]
+                            if "game=" in arg:
+                                server_mode = arg.split("=")[1]
+                            if "?" in arg:
+                                server_map = arg.split("?")[0]
+                            if "-servername=" in arg:
+                                server_gamename = arg.split("=")[1]
+                        server_localname = p.exe().split('/')[-5]
+                        server_data = {
+                            "server_localname" : server_localname,
+                            "server_pid"       : pid,
+                            "server_mode"      : server_mode,
+                            "server_map"       : server_map,
+                            "server_port"      : server_port,
+                            "server_gamename"  : server_gamename
+                        }
+                        active_server_list.append(server_data)
+
         elif platform == "win32":
             pidlist = check_output(
                 ["WMIC", "path", "win32_process", "get", "Caption,Processid,Commandline"], 
@@ -131,6 +150,11 @@ class VertexServerManager():
                         server_data = {
                             "server_name" : server_name,
                             "server_pid" : server_pid
+                            "server_pid"       : server_pid,
+                            "server_mode"      : splitted_line[2].split("=")[1],
+                            "server_map"       : splitted_line[2].split("?")[0],
+                            "server_port"      : splitted_line[3].split("=")[1],
+                            "server_gamename"  : splitted_line[4].split("=")[1]
                         }
                         active_server_list.append(server_data)
 
