@@ -123,7 +123,7 @@ if config["init"] == True:
 if config["list_servers"] == True:
     import os
     serverList = vsm.get_server_list_only_localname(os.getcwd())
-    if serverList is not None:
+    if serverList:
         all_started_servers = vsm.get_all_started_servers()
         print("List of installed server :")
         for server_id in serverList:
@@ -182,7 +182,7 @@ if config["start_id"]:
     else:
         import os
         serverList = vsm.get_server_list_only_localname(os.getcwd())
-        if serverList is not None:
+        if serverList:
             print("List of installed server :")
             for server_localname in serverList: print(server_localname)
         else:
@@ -196,7 +196,7 @@ if config["kill_id"]:
     else:
         import os
         serverList = vsm.get_server_list_only_localname(os.getcwd())
-        if serverList is not None:
+        if serverList:
             print("List of installed server :")
             for server_localname in serverList: print(server_localname)
         else:
@@ -209,7 +209,7 @@ if config["restart_id"]:
     if config["restart_id"] > 0:
         import os
         serverList = vsm.get_server_list_only_localname(os.getcwd())
-        if serverList is not None:
+        if serverList:
             displayNoIdFound = True
             for server_localname in serverList: 
                 if server_localname.endswith(str(config["restart_id"])):
@@ -229,7 +229,7 @@ if config["restart_id"]:
     if displayServers:
         import os
         serverList = vsm.get_server_list_only_localname(os.getcwd())
-        if serverList is not None:
+        if serverList:
             print("List of installed server :")
             for server_localname in serverList: print(server_localname)
         else:
@@ -240,7 +240,7 @@ if config["restart_id"]:
 # if config["start_all"]:
 #   import os
 #   serverList = vsm.get_server_list_only_localname(os.getcwd())
-#   if serverList is not None:
+#   if serverList:
 #       print("Will start all servers")
 #       for server_localname in serverList: vsm.start_server_by_localname(server_localname)
 #   else:
@@ -251,7 +251,7 @@ if config["restart_id"]:
 if config["kill_all"]:
     import os
     serverList = vsm.get_server_list_only_localname(os.getcwd())
-    if serverList is not None:
+    if serverList:
         print("Will kill all servers")
         for server_localname in serverList: 
             vsm.kill_server_by_localname(server_localname)
@@ -263,7 +263,7 @@ if config["kill_all"]:
 if config["restart_all"]:
     import os
     serverList = vsm.get_server_list_only_localname(os.getcwd())
-    if serverList is not None:
+    if serverList:
         print("Will restart all servers")
         for server_localname in serverList: 
             vsm.restart_server_by_localname(server_localname)
@@ -293,7 +293,7 @@ if config["ini_update_server_id"]:
     else:
         import os
         serverList = vsm.get_server_list_only_localname(os.getcwd())
-        if serverList is not None:
+        if serverList:
             print("List of installed server :")
             for server_localname in serverList: print(server_localname)
         else:

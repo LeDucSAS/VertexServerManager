@@ -98,37 +98,42 @@ class VertexServerManager():
         import os
         from sys import platform
         from subprocess import check_output
+        from subprocess import CalledProcessError   
 
         active_server_list = []
 
         if platform == "linux" or platform == "linux2":
-            pidlist = check_output(["pidof","MCSServer"], universal_newlines=True).split()
             serverList = self.get_server_list_only_localname(os.getcwd())
+            try:
+                pidlist = check_output(["pidof","MCSServer"], universal_newlines=True).split()
+            except CalledProcessError as e:
+                pidlist = None
 
-            if serverList is not None:
-                for pid in pidlist:
-                    p = psutil.Process(int(pid))
-                    if "MCSServer" in p.exe():
-                        liveServerArgs = p.cmdline()
-                        for arg in liveServerArgs:
-                            if "-port=" in arg:
-                                server_port = arg.split("=")[1]
-                            if "game=" in arg:
-                                server_mode = arg.split("=")[1]
-                            if "?" in arg:
-                                server_map = arg.split("?")[0]
-                            if "-servername=" in arg:
-                                server_gamename = arg.split("=")[1]
-                        server_localname = p.exe().split('/')[-5]
-                        server_data = {
-                            "server_localname" : server_localname,
-                            "server_pid"       : pid,
-                            "server_mode"      : server_mode,
-                            "server_map"       : server_map,
-                            "server_port"      : server_port,
-                            "server_gamename"  : server_gamename
-                        }
-                        active_server_list.append(server_data)
+            if pidlist:
+                if serverList is not None:
+                    for pid in pidlist:
+                        p = psutil.Process(int(pid))
+                        if "MCSServer" in p.exe():
+                            liveServerArgs = p.cmdline()
+                            for arg in liveServerArgs:
+                                if "-port=" in arg:
+                                    server_port = arg.split("=")[1]
+                                if "game=" in arg:
+                                    server_mode = arg.split("=")[1]
+                                if "?" in arg:
+                                    server_map = arg.split("?")[0]
+                                if "-servername=" in arg:
+                                    server_gamename = arg.split("=")[1]
+                            server_localname = p.exe().split('/')[-5]
+                            server_data = {
+                                "server_localname" : server_localname,
+                                "server_pid"       : pid,
+                                "server_mode"      : server_mode,
+                                "server_map"       : server_map,
+                                "server_port"      : server_port,
+                                "server_gamename"  : server_gamename
+                            }
+                            active_server_list.append(server_data)
 
         elif platform == "win32":
             pidlist = check_output(
