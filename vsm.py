@@ -129,8 +129,8 @@ if config["list_servers"] == True:
         for server_id in serverList:
             server_status = "[ offline |        ]"
             for active in all_started_servers:
-                    server_status = "[         | online ]"
                 if server_id in active["server_localname"]:
+                    server_status = f"[         | online ] - {active['server_mode']} mode on map {active['server_map']} with name {active['server_gamename']}"
             print(f"    {server_id} - {server_status}")
     else:
         print("No server installed.")
