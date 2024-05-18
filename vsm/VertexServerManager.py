@@ -455,8 +455,6 @@ class VertexServerManager():
             print("            ./maps/")
             print("            ./servers/")
             print("            ./cache/")
-            print("            ./donotdelete/")
-            print("            ./donotdelete/maps/ (which content equals ./maps/)")
             print("            ./vsm/")
             print("    ->  If init has failed, please remove all folders but ./vsm/")
             print("    ->  Init will stop")
