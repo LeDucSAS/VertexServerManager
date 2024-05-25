@@ -99,6 +99,10 @@ Command line arguments interpretation
 '''
 from vsm.VertexServerManager import VertexServerManager
 vsm = VertexServerManager()
+from vsm.ModioDownloader import ModioDownloader
+md = ModioDownloader()
+from vsm.IniFileEditor import IniFileEditor
+ife = IniFileEditor()
 
 # Server parameter
 if config["set_server_name"]:
@@ -283,7 +287,7 @@ if config["ini_update_server_id"]:
                     config['ini_update_key'] is not None and
                     config['ini_new_value']  is not None
                 ):
-                    vsm.update_ini_file_value(server_localname, config['ini_file'], config['ini_update_key'], config['ini_new_value'])
+                    ife.update_ini_file_value(server_localname, config['ini_file'], config['ini_update_key'], config['ini_new_value'])
                 else:
                     print("Error : Script require the 4 arguments : --ini-update-server-id, --ini-file, --ini-update-key, --ini-new-value.")
             else:
@@ -302,4 +306,4 @@ if config["ini_update_server_id"]:
 
 # Install new modfile
 if config["install_mod"]:
-    vsm.install_mod(config["install_mod"])
+    md.install_mod(config["install_mod"])
