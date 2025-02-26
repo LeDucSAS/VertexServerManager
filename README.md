@@ -7,6 +7,12 @@ License Art Libre 1.3 (https://artlibre.org/).
 * psutil
 * requests
 
+```bash
+sudo apt install pipx
+pipx install psutil
+pipx install requests
+```
+
 > **Note**
 > About OS support
 * Linux support (tested Ubuntu 22.04.2 LTS and Python 3.10)
