@@ -129,3 +129,15 @@ Feedback much appreciated !
 
 Your sincerely,
 LeDucSAS
+
+## Other information
+* List of official maps
+  * `P_FFA_Complex`
+  * `P_Duel_Underground`
+  * `P_ROOF_TOPS`
+  * `P_MINE_ENTRANCE`
+  * `DEVMAP`
+  * `P_FFA_Complex_Arctic`
+  * `P_ROOF_TOPS_SNOW`
+  * `P_ADMARI_CORP`
+
