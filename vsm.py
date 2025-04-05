@@ -129,7 +129,7 @@ if config["list_servers"] == True:
     serverList = vsm.get_server_list_only_localname(os.getcwd())
     if serverList:
         all_started_servers = vsm.get_all_started_servers()
-        print("List of installed server :")
+        print("List of installed server [offline or online] and initial starting parameters :")
         for server_id in serverList:
             server_status = "[ offline |        ]"
             for active in all_started_servers:
