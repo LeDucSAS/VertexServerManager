@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # LeDucSAS - Vertex Server Manager (VSM)
 # License : Free art license 1.3 https://artlibre.org/
 
