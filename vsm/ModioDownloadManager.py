@@ -1,4 +1,3 @@
-import yaml
 import sys
 from sys import platform
 import tarfile
@@ -121,13 +120,3 @@ class ModioDownloadManager():
         with zipfile.ZipFile(zipFilePath, 'r') as zip_ref:
             zip_ref.extractall(extractTargetPath)
 
-
-with open('./conf/modio.yaml', 'r') as file:
-    modio_config = yaml.safe_load(file)
-
-test = ModioDownloadManager(modio_config)
-
-# Carnage
-# test.mod_install_direct_url("https://g-594.modapi.io/v1/games/594/mods/4607033/files/6191393/download")
-# Star arena
-test.mod_install_direct_url("https://g-594.modapi.io/v1/games/594/mods/608426/files/4408459/download")
