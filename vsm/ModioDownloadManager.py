@@ -1,4 +1,5 @@
 import yaml
+import sys
 from sys import platform
 import tarfile
 import zipfile
@@ -65,11 +66,22 @@ class ModioDownloadManager():
     def file_download_to_cache(self, url_to_download, filename):
         print("file_download_to_cache() ...")
         self.DATA["downloaded_file_path"] = f"cache/{filename}.download"
-        
-        r = requests.get(url_to_download, stream=True)
+        response = requests.get(url_to_download, stream=True)
         with open(self.DATA["downloaded_file_path"], 'wb') as fd:
-            for chunk in r.iter_content(chunk_size=128):
-                fd.write(chunk)
+            print(f'Downloading {self.DATA["downloaded_file_path"]}')
+            total_length = response.headers.get('content-length')
+            if total_length is None: # no content length header
+                fd.write(response.content)
+            else:
+                dl = 0
+                total_length = int(total_length)
+                for data in response.iter_content(chunk_size=4096):
+                    dl += len(data)
+                    fd.write(data)
+                    done = int(50 * dl / total_length)
+                    sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )    
+                    sys.stdout.flush()
+                print() # To have a clean newline
         print("file_download_to_cache() => done")
 
 
