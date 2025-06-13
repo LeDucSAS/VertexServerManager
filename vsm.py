@@ -40,6 +40,7 @@ ARGPARSE AREA
 
 
 import argparse
+import os
 import sys
 
 parser = argparse.ArgumentParser( description="LeDucSAS - Vertex Server Manager", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -124,7 +125,6 @@ if config["init"] == True:
 
 # Do list servers
 if config["list_servers"] == True:
-    import os
     serverList = vsm.get_server_list_only_localname(os.getcwd())
     if serverList:
         all_started_servers = vsm.get_all_started_servers()
@@ -185,7 +185,6 @@ if config["start_id"]:
     if config["start_id"] > 0:
         vsm.start_server_by_id(config["start_id"])
     else:
-        import os
         serverList = vsm.get_server_list_only_localname(os.getcwd())
         if serverList:
             print("List of installed server :")
@@ -199,7 +198,6 @@ if config["kill_id"]:
     if config["kill_id"] > 0:
         vsm.kill_server_by_id(config["kill_id"])
     else:
-        import os
         serverList = vsm.get_server_list_only_localname(os.getcwd())
         if serverList:
             print("List of installed server :")
@@ -212,7 +210,6 @@ if config["kill_id"]:
 if config["restart_id"]:
     displayServers = False
     if config["restart_id"] > 0:
-        import os
         serverList = vsm.get_server_list_only_localname(os.getcwd())
         if serverList:
             displayNoIdFound = True
@@ -232,7 +229,6 @@ if config["restart_id"]:
         displayServers = True
 
     if displayServers:
-        import os
         serverList = vsm.get_server_list_only_localname(os.getcwd())
         if serverList:
             print("List of installed server :")
@@ -243,7 +239,6 @@ if config["restart_id"]:
 ''' Desactivated because can't properly specify values unless relying on creating a config file'''
 # Do start all server
 # if config["start_all"]:
-#   import os
 #   serverList = vsm.get_server_list_only_localname(os.getcwd())
 #   if serverList:
 #       print("Will start all servers")
@@ -254,7 +249,6 @@ if config["restart_id"]:
 
 # Do kill all server
 if config["kill_all"]:
-    import os
     serverList = vsm.get_server_list_only_localname(os.getcwd())
     if serverList:
         print("Will kill all servers")
@@ -266,7 +260,6 @@ if config["kill_all"]:
 
 # Do restart all server
 if config["restart_all"]:
-    import os
     serverList = vsm.get_server_list_only_localname(os.getcwd())
     if serverList:
         print("Will restart all servers")
@@ -296,7 +289,6 @@ if config["ini_update_server_id"]:
         else:
             print(f"Server {server_localname} is already started. No .ini update will be done.")
     else:
-        import os
         serverList = vsm.get_server_list_only_localname(os.getcwd())
         if serverList:
             print("List of installed server :")
