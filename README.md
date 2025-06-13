@@ -123,6 +123,11 @@ Feedback much appreciated !
 Your sincerely,
 LeDucSAS
 
+10. If you have an API key, you can download files from mod.io using the file download URL
+```console
+~$ uv run vsm.py --install-mod https://g-594.modapi.io/v1/games/594/mods/608426/files/4408459/download
+```
+
 ## Other information
 * List of official maps
   * `P_FFA_Complex`
