@@ -130,6 +130,7 @@ if config["list_servers"] == True:
     if serverList:
         all_started_servers = vsm.get_all_started_servers()
         print("List of installed server [offline or online] and initial starting parameters :")
+        print("")
         for server_id in serverList:
             server_status = "[ offline |        ]"
             for active in all_started_servers:
@@ -138,6 +139,7 @@ if config["list_servers"] == True:
             print(f"    {server_id} - {server_status}")
     else:
         print("No server installed.")
+    print("")
 
 # Do server install
 if config["install_server"] == True:
