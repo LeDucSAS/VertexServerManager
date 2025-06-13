@@ -99,8 +99,6 @@ Command line arguments interpretation
 '''
 from vsm.VertexServerManager import VertexServerManager
 vsm = VertexServerManager()
-from vsm.ModioDownloader import ModioDownloader
-md = ModioDownloader()
 from vsm.IniFileEditor import IniFileEditor
 ife = IniFileEditor()
 
@@ -299,4 +297,14 @@ if config["ini_update_server_id"]:
 
 # Install new modfile
 if config["install_mod"]:
-    md.install_mod(config["install_mod"])
+    import yaml
+    from vsm.ModioDownloadManager import ModioDownloadManager
+    if os.path.isfile('./conf/modio.yaml'):
+        with open('./conf/modio.yaml', 'r') as file:
+            modio_config = yaml.safe_load(file)
+        mdm = ModioDownloadManager(modio_config)
+        mdm.mod_install_direct_url(config["install_mod"])
+    else:
+        print("Please check ./conf/ folder, and create a modio.yaml file from template and add your api key into it.")
+
+
