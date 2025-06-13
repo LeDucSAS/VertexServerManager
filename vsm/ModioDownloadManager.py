@@ -1,118 +1,117 @@
-class ModioDownloader():
-    def __init__(self):
-        ...
-    """
+import yaml
+from sys import platform
+import tarfile
+import zipfile
+import requests
+import os
+import shutil
 
-    Class Structure
-    -- Global data
-    Data
-    def __init__(self):
+class ModioDownloadManager():
 
+    DATA = {}
+
+    def __init__(self, yaml_data):
+        self.DATA["game_id"] = yaml_data["game_id"]
+        self.DATA["mod_id"] = ''
+        self.DATA["file_id"] = ''
+        self.DATA["api_key"] = yaml_data["api_key"]
+        self.DATA["file_url"] = ''
+        self.DATA["downloaded_file_path"] = ''
+        self.DATA["extracted_file_path"] = ''
     
-    -- mod.io
-    def install_mod                       (self, mod_url_to_download):
 
-    """
-    '''
-
-
-    mod.io
+    def mod_list(self):
+        # list all, list available, list installed
+        ...
 
 
-    '''
-
-
-    def install_mod(self, mod_url_to_download):
-        import os
-        import shutil
-        import zipfile
-        from urllib.request import urlopen
-
-        if not self.is_folder_has_been_initialized(os.getcwd()):
-            print("Warning : Folder has not been init, script will stop.")
-            print("You can init the folder doing like : python ./vsm.py --init")
-            return
-
-        print("Checking URL...")
-        invalid_provided_url_error_message = "Error : Invalid URL : please provide a url like https://api.mod.io/v1/games/594/mods/<mod_id>/files/<file_id>/download"
-        split_url = mod_url_to_download.split("/")
-        '''
-        ['https:', '', 'api.mod.io', 'v1', 'games', <gameid>, 'mods', <modid>, 'files', <fileid>, 'download']
-        '''
-        if(len(split_url) != 11):
-            print(invalid_provided_url_error_message)
+    def mod_install_direct_url(self, direct_mod_file_url_to_download):
+        print("mod_install_direct_url() ...")
+        try:
+            game_id = direct_mod_file_url_to_download.split("/games/")[1].split("/")[0]
+            if not (int(self.DATA["game_id"]) == int(game_id)):
+                return False
+            self.DATA["mod_id"] = direct_mod_file_url_to_download.split("/mods/")[1].split("/")[0]
+            self.DATA["file_id"] = direct_mod_file_url_to_download.split("/files/")[1].split("/")[0]
+            self.DATA["file_url"] = f"https://api.mod.io/v1/games/{self.DATA['game_id']}/mods/{self.DATA['mod_id']}/files/{self.DATA['file_id']}/download?api_key={self.DATA['api_key']}"
+        except:
+            print("An exception occurred")
             return False
 
-        if (
-            split_url[2] != 'api.mod.io' and
-            split_url[4] != 'games'      and
-            split_url[5] != '594'        and
-            split_url[6] != 'mods'       and
-            split_url[8] != 'files'
-        ):
-            print(invalid_provided_url_error_message)
-            return False
-
-        print(f"    Checking URL '{mod_url_to_download}' ...")
-        # real_mod_url = urlopen(mod_url_to_download).geturl()
+        self.cleanup(self.DATA["mod_id"]);
+        self.file_download_to_cache(self.DATA["file_url"], self.DATA["mod_id"])
+        self.file_extract_to_cache(self.DATA["downloaded_file_path"], self.DATA["mod_id"])
+        self.file_move_from_cache_and_overwrite_to_maps(self.DATA["mod_id"])
+        self.cleanup(self.DATA["mod_id"]);
         
-        import requests
+        print("mod_install_direct_url() => done")
 
-        url = requests.get(mod_url_to_download)
-        htmltext = url.text
-        print(htmltext)
 
-        real_mod_url = "https://binary.modcdn.io/mods/c9d5/1049908/kyleball-client.zip?verify=1713904215-2Ng7SEzuKyyYXukbzV83RBT5m9oVC2E3ADFyix5p8DI%3D"
-        print(f"    Found real file location as '{real_mod_url}'")
+    def cleanup(self, mod_id):
+        print("cleanup() ...")
 
-        if(urlopen(real_mod_url).getheader('Content-Type') != "application/zip"):
-            print("Error : File type is not zip.")
-            return False
-        print("    ->  Done")
-        mod_id               = split_url[7]
-        server_init_path     = os.getcwd()
-        new_mod_cache_path   = f"{server_init_path}/cache/{mod_id}"
-        new_mod_maps_path    = f"{server_init_path}/maps/{mod_id}"
-        filename_to_download = real_mod_url.split("/")[-1]
-        check_file_exists    = f"{server_init_path}/cache/{filename_to_download}"
+        cached_file = f"{os.getcwd()}/cache/{mod_id}.download"
+        cached_folder = f"{os.getcwd()}/cache/{mod_id}/"
 
-        if os.path.isfile(check_file_exists):
-            print(f"Warning : Doing cleanup, removes pre-existing '{check_file_exists}'.")
-            os.remove(check_file_exists)
-            print(f"    ->  Done")
+        if os.path.isfile(cached_file):
+            os.remove(cached_file)
+            
+        if os.path.isdir(cached_folder):
+            shutil.rmtree(cached_folder)
 
-        # Download
-        print(f"Downloading '{real_mod_url}'...")
-        cache_downloaded_mod_zip = self.download_file_to_cache(real_mod_url)
-        print(f"    ->  Done")
+        print("cleanup() => done")
 
-        # Clean leftovers of a previous attempt and create
-        if os.path.isdir(new_mod_cache_path):
-            print(f"Warning : Doing cleanup, removes pre-existing '{new_mod_cache_path}'.")
-            shutil.rmtree(new_mod_cache_path)
-            print(f"    ->  Done")
-        print(f"Creating '{new_mod_cache_path}'...")
-        os.makedirs(new_mod_cache_path)
-        print(f"    ->  Done")
 
-        # Unzip to new folder
-        print(f"Extracting '{cache_downloaded_mod_zip}'...")
-        with zipfile.ZipFile(cache_downloaded_mod_zip, 'r') as zip_ref:
-            zip_ref.extractall(new_mod_cache_path)
-        print(f"    ->  Done")
-
-        # Remove existing mod in ./maps/ and place new folder inside it
-        if os.path.isdir(new_mod_maps_path):
-            print(f"Warning : Doing cleanup, removes pre-existing '{new_mod_maps_path}'.")
-            shutil.rmtree(new_mod_maps_path)
-            print(f"    ->  Done")
-        print(f"Moving '{new_mod_cache_path}' to '{new_mod_maps_path}'...")
-        shutil.move(new_mod_cache_path, new_mod_maps_path)
-        print(f"    ->  Done")
-        print(f"Removing '{cache_downloaded_mod_zip}'...")
-        os.remove(cache_downloaded_mod_zip)
-        print(f"    ->  Done")
+    def file_download_to_cache(self, url_to_download, filename):
+        print("file_download_to_cache() ...")
+        self.DATA["downloaded_file_path"] = f"cache/{filename}.download"
         
-        print(f"Success : Mod id {mod_id} with filename {filename_to_download} successfully downloaded and installed.")
-        return True
+        r = requests.get(url_to_download, stream=True)
+        with open(self.DATA["downloaded_file_path"], 'wb') as fd:
+            for chunk in r.iter_content(chunk_size=128):
+                fd.write(chunk)
+        print("file_download_to_cache() => done")
 
+
+    def file_extract_to_cache(self, file_path, mod_id):
+        print("file_extract() ...")
+        self.DATA["extracted_file_path"] = f'{os.getcwd()}/cache/{mod_id}'
+        target_path = self.DATA["extracted_file_path"]
+        os.mkdir(target_path)
+        if platform == "linux" or platform == "linux2":
+            self.__untargz_file(file_path, target_path)
+        elif platform == "win32":
+            self.__unzip_file(file_path, target_path)
+        print("file_extract() => done")
+
+
+    def file_move_from_cache_and_overwrite_to_maps(self, mod_id):
+        print("file_move_from_cache_and_overwrite_to_maps() ...")
+        source = f"{os.getcwd()}/cache/{mod_id}"
+        destination = f"{os.getcwd()}/maps/{mod_id}"
+        if os.path.isdir(destination):
+            shutil.rmtree(destination)
+        shutil.move(source, destination)
+        print("file_move_from_cache_and_overwrite_to_maps() => done")
+
+
+    def __untargz_file(self, tarGzFilePath, extractTargetPath):
+        fileExtractor = tarfile.open(tarGzFilePath)
+        fileExtractor.extractall(extractTargetPath)
+        fileExtractor.close()
+        
+
+    def __unzip_file(self, zipFilePath, extractTargetPath):
+        with zipfile.ZipFile(zipFilePath, 'r') as zip_ref:
+            zip_ref.extractall(extractTargetPath)
+
+
+with open('./conf/modio.yaml', 'r') as file:
+    modio_config = yaml.safe_load(file)
+
+test = ModioDownloadManager(modio_config)
+
+# Carnage
+# test.mod_install_direct_url("https://g-594.modapi.io/v1/games/594/mods/4607033/files/6191393/download")
+# Star arena
+test.mod_install_direct_url("https://g-594.modapi.io/v1/games/594/mods/608426/files/4408459/download")
