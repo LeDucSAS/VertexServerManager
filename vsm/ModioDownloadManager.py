@@ -90,8 +90,12 @@ class ModioDownloadManager():
         source = f"{os.getcwd()}/cache/{mod_id}"
         destination = f"{os.getcwd()}/maps/{mod_id}"
         if os.path.isdir(destination):
+            print(f"Warning : Deleting pre-existing '{destination}'.")
             shutil.rmtree(destination)
+        print(f"Info : Moving mod folder from cache to maps folder'.")
         shutil.move(source, destination)
+        if os.path.isdir(destination):
+            print(f"Info : Copy success '{destination}'.")
         print("file_move_from_cache_and_overwrite_to_maps() => done")
 
 
