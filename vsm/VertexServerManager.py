@@ -138,7 +138,7 @@ class VertexServerManager():
                 shell=True)
             lines = pidlist.splitlines(keepends=True)
             for line in lines:
-                if "\Win64\MCSServer.exe" in line:
+                if "\\Win64\\MCSServer.exe" in line:
                     splitted_line = " ".join(line.replace("\\", "/").split()).split(" ")
                     if "MCSServer.exe" in splitted_line[0]:
                         serverpath = ""
