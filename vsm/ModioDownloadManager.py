@@ -107,12 +107,12 @@ class ModioDownloadManager():
 
     def file_extract_to_cache(self, file_path, mod_id):
         print("file_extract() ...")
+        # Create a folder with the ID of the mod so it easier to update
         self.DATA["extracted_file_path"] = f'{os.getcwd()}/cache/{mod_id}'
         target_path = self.DATA["extracted_file_path"]
         os.mkdir(target_path)
-        if platform == "linux" or platform == "linux2":
-            self.__untargz_file(file_path, target_path)
-        elif platform == "win32":
+        file_ext = self.DATA["archive_name"].split(".")
+        if file_ext == "zip":
             self.__unzip_file(file_path, target_path)
         print("file_extract() => done")
 
