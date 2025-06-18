@@ -11,11 +11,16 @@ class ModioDownloadManager():
     DATA = {}
 
     def __init__(self, yaml_data):
+        # Technical data to access the mod file
         self.DATA["game_id"] = yaml_data["game_id"]
         self.DATA["mod_id"] = ''
         self.DATA["file_id"] = ''
         self.DATA["api_key"] = yaml_data["api_key"]
-        self.DATA["file_url"] = ''
+        # Technical data about the file
+        self.DATA["archive_url"] = ''
+        self.DATA["archive_name"] = ''
+        self.DATA["archive_type"] = ''
+        # Local data
         self.DATA["downloaded_file_path"] = ''
         self.DATA["extracted_file_path"] = ''
     
@@ -33,39 +38,55 @@ class ModioDownloadManager():
                 return False
             self.DATA["mod_id"] = direct_mod_file_url_to_download.split("/mods/")[1].split("/")[0]
             self.DATA["file_id"] = direct_mod_file_url_to_download.split("/files/")[1].split("/")[0]
-            self.DATA["file_url"] = f"https://api.mod.io/v1/games/{self.DATA['game_id']}/mods/{self.DATA['mod_id']}/files/{self.DATA['file_id']}/download?api_key={self.DATA['api_key']}"
+            self.DATA["archive_url"] = f"https://api.mod.io/v1/games/{self.DATA['game_id']}/mods/{self.DATA['mod_id']}/files/{self.DATA['file_id']}/download?api_key={self.DATA['api_key']}"
         except:
             print("An exception occurred")
             return False
 
-        self.cleanup(self.DATA["mod_id"]);
-        self.file_download_to_cache(self.DATA["file_url"], self.DATA["mod_id"])
+        # self.cachePurification() # Enable for purity of cache
+        self.cacheCleanup(self.DATA["mod_id"])
+        self.file_download_to_cache(self.DATA["archive_url"], self.DATA["mod_id"])
         self.file_extract_to_cache(self.DATA["downloaded_file_path"], self.DATA["mod_id"])
         self.file_move_from_cache_and_overwrite_to_maps(self.DATA["mod_id"])
-        self.cleanup(self.DATA["mod_id"]);
+        self.cacheCleanup(self.DATA["mod_id"])
         
         print("mod_install_direct_url() => done")
 
 
-    def cleanup(self, mod_id):
-        print("cleanup() ...")
-
-        cached_file = f"{os.getcwd()}/cache/{mod_id}.download"
+    def cacheCleanup(self, mod_id):
+        print("cacheCleanup() ...")
+        cached_file = f"{os.getcwd()}/cache/{self.DATA["archive_name"]}"
         cached_folder = f"{os.getcwd()}/cache/{mod_id}/"
-
         if os.path.isfile(cached_file):
             os.remove(cached_file)
-            
         if os.path.isdir(cached_folder):
             shutil.rmtree(cached_folder)
+        print("cacheCleanup() => done")
 
-        print("cleanup() => done")
+
+    def cachePurification(self):
+        print("cachePurification() ...")
+        retain = [".gitignore"]
+        cache_path = f"{os.getcwd()}/cache/"
+        for item in os.listdir(cache_path):
+            if item not in retain:  
+                item_path = f"{cache_path}{item}"
+                if os.path.isfile(item_path):
+                    os.remove(item_path)
+                if os.path.isdir(item_path):
+                    shutil.rmtree(item_path)
+        print("cachePurification() => done")
 
 
     def file_download_to_cache(self, url_to_download, filename):
         print("file_download_to_cache() ...")
-        self.DATA["downloaded_file_path"] = f"cache/{filename}.download"
-        response = requests.get(url_to_download, stream=True)
+        # Getting the file data
+        response = requests.get(url_to_download, stream=True, allow_redirects=True)
+
+        self.DATA["archive_type"] = response.headers.get("Content-Type").split("/")[1]
+        self.DATA["archive_name"] = response.url.split("?")[0].split("/")[-1]
+        self.DATA["downloaded_file_path"] = f"cache/{self.DATA["archive_name"]}"
+
         with open(self.DATA["downloaded_file_path"], 'wb') as fd:
             print(f'Downloading {self.DATA["downloaded_file_path"]}')
             total_length = response.headers.get('content-length')
