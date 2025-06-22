@@ -111,7 +111,7 @@ class ModioDownloadManager():
         self.DATA["extracted_file_path"] = f'{os.getcwd()}/cache/{mod_id}'
         target_path = self.DATA["extracted_file_path"]
         os.mkdir(target_path)
-        file_ext = self.DATA["archive_name"].split(".")
+        file_ext = self.DATA["archive_name"].split(".")[1]
         if file_ext == "zip":
             self.__unzip_file(file_path, target_path)
         print("file_extract() => done")
