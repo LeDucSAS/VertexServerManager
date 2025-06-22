@@ -1,6 +1,11 @@
+import logging
+logger = logging.getLogger("VertexServerManager")
+
+import vsm.VsmFileManager as VsmFileManager
+
 class VertexServerManager():
     def __init__(self):
-        ...
+        self.vfm = VsmFileManager.VsmFileManager()
 
     """
 
@@ -255,7 +260,7 @@ class VertexServerManager():
         import os
         from sys import platform
         
-        print(f"    ->  Starting server {server_localname} ...")
+        logger.info(f"    ->  Starting server {server_localname} ...")
 
         if int(self.DATA['gameServer_port']) < 1:
             self.DATA['gameServer_port'] = re.sub('[^0-9]','', server_localname)
@@ -294,11 +299,11 @@ class VertexServerManager():
             import time
             time.sleep(6)
 
-        print(f"    ->  Server {server_localname} has been started")
-        print(f"    ->    Port      - {argument_port}")
-        print(f"    ->    Game name - {argument_gamename}")
-        print(f"    ->    Mode      - {argument_gamemode}")
-        print(f"    ->    Map       - {argument_map}")
+        logger.info(f"    ->  Server {server_localname} has been started")
+        logger.info(f"    ->    Port      - {argument_port}")
+        logger.info(f"    ->    Game name - {argument_gamename}")
+        logger.info(f"    ->    Mode      - {argument_gamemode}")
+        logger.info(f"    ->    Map       - {argument_map}")
         return server.pid
 
     def start_server_by_id(self, server_port):
@@ -307,11 +312,11 @@ class VertexServerManager():
         if server_localname is not None:
             if not self.is_server_already_started(server_localname):
                 server_pid = self.start_server_by_localname(server_localname)
-                print(f"    ->  Server {server_localname} started with pid {server_pid}")
+                logger.info(f"    ->  Server {server_localname} started with pid {server_pid}")
             else:
-                print(f"    ->  Server {server_localname} already started.")
+                logger.info(f"    ->  Server {server_localname} already started.")
         else:
-            print(f"    ->  No server found with id {server_port}")
+            logger.info(f"    ->  No server found with id {server_port}")
 
 
     ##########
@@ -324,11 +329,11 @@ class VertexServerManager():
         import time
         from subprocess import check_output
         
-        print(f"    ->  Shutdowning server {server_localname} ...")
+        logger.info(f"    ->  Shutdowning server {server_localname} ...")
 
         server_is_active = self.is_server_already_started(server_localname)
         if not server_is_active:
-            print(f"    ->  Server {server_localname} is not currently active.")
+            logger.info(f"    ->  Server {server_localname} is not currently active.")
             return
 
         errorNoServer = False
@@ -343,7 +348,7 @@ class VertexServerManager():
             errorNoServer = True
 
         if errorNoServer:
-            print("Warning : No server found, no shutdown")
+            logger.info("Warning : No server found, no shutdown")
             return
 
         # Wait for shutdown before the second SIGINT
@@ -357,7 +362,7 @@ class VertexServerManager():
                     if server_localname in server['server_localname']:
                         os.kill(int(server['server_pid']), signal.SIGINT)
         except subprocess.CalledProcessError as e:
-            print("Info : No server found on second SIGINT, seems server has been killed on first SIGINT")
+            logger.info("Info : No server found on second SIGINT, seems server has been killed on first SIGINT")
 
         # Check that server is shutdown (don't use psutil because I want to check the path)
         try:
@@ -366,21 +371,21 @@ class VertexServerManager():
             if all_started_servers:
                 for server in all_started_servers:
                     if server_localname in server['server_localname']:
-                        print("Warning : Server still alive")
+                        logger.info("Warning : Server still alive")
                         serverDed = False
             if serverDed:
-                print(f"    ->  Server {server_localname} has been shutdown")
+                logger.info(f"    ->  Server {server_localname} has been shutdown")
         except subprocess.CalledProcessError as e:
-            print(f"    ->  Server {server_localname} has been shutdown")
+            logger.info(f"    ->  Server {server_localname} has been shutdown")
 
     def kill_server_by_id(self, server_port):
         server_localname = self.find_server_localname_by_id(server_port)
 
         if server_localname is not None:
-            print(f"Killing server {server_localname}...")
+            logger.info(f"Killing server {server_localname}...")
             server_pid = self.kill_server_by_localname(server_localname)
         else:
-            print(f"No server found with id {server_port}")
+            logger.info(f"No server found with id {server_port}")
 
     # RESTART
     def restart_server_by_localname(self, server_localname):
@@ -403,7 +408,7 @@ class VertexServerManager():
                     time.sleep(1)
                     self.start_server_by_localname(server_localname)
         else:
-            print("No server installed.")
+            logger.info("No server installed.")
 
 
     def restart_server_by_id(self, server_port):
@@ -426,7 +431,7 @@ class VertexServerManager():
         if server_init_path is None:
             server_init_path = os.getcwd()
 
-        print("Check that path has not been initialized already.")
+        logger.info("Check that path has not been initialized already.")
         if not self.is_folder_has_been_initialized():
             map_folder_path    = f"{server_init_path}/maps"
             server_folder_path = f"{server_init_path}/servers"
@@ -439,21 +444,21 @@ class VertexServerManager():
 
             for ftc in folders_to_create:
                 if not os.path.exists(ftc):
-                    print(f"    Creating - {ftc}")
+                    logger.info(f"    Creating - {ftc}")
                     os.makedirs(ftc)
                 else:
-                    print(f"    Already exists - {ftc}")
+                    logger.info(f"    Already exists - {ftc}")
 
-            print("    ->  Current directory has been init for vertex servers.")
+            logger.info("    ->  Current directory has been init for vertex servers.")
         else:
-            print("    ->  Seems directory has already been initialized")
-            print("    ->  Please check for existence for the fallowing folders")
-            print("            ./maps/")
-            print("            ./servers/")
-            print("            ./cache/")
-            print("            ./vsm/")
-            print("    ->  If init has failed, please remove all folders but ./vsm/")
-            print("    ->  Init will stop")
+            logger.info("    ->  Seems directory has already been initialized")
+            logger.info("    ->  Please check for existence for the fallowing folders")
+            logger.info("            ./maps/")
+            logger.info("            ./servers/")
+            logger.info("            ./cache/")
+            logger.info("            ./vsm/")
+            logger.info("    ->  If init has failed, please remove all folders but ./vsm/")
+            logger.info("    ->  Init will stop")
 
 
     def download_file_to_cache(self, url_to_download):
@@ -497,7 +502,7 @@ class VertexServerManager():
         if platform == "linux" or platform == "linux2":
             ...
         elif platform == "darwin":
-            print("OSX not supported right now currently")
+            logger.info("OSX not supported right now currently")
         elif platform == "win32":
             ...
 
@@ -517,26 +522,26 @@ class VertexServerManager():
         # Check init, download, unzip, clean cache
         folder_has_been_init = self.is_folder_has_been_initialized(os.getcwd())
         if not folder_has_been_init:
-            print("Warning : Folder has not been init, script will stop.")
-            print("You can init the folder doing like : python ./vsm.py --init")
+            logger.info("Warning : Folder has not been init, script will stop.")
+            logger.info("You can init the folder doing like : python ./vsm.py --init")
             return
 
-        print("Downloading server archive to ./cache/ ...")
+        logger.info("Downloading server archive to ./cache/ ...")
         downloaded_file_path = self.download_file_to_cache(url_to_download)
-        print("    ->  Done")
+        logger.info("    ->  Done")
 
-        print("Extracting server archive file into ./cache/")
+        logger.info("Extracting server archive file into ./cache/")
         
         if platform == "linux" or platform == "linux2":
             self.untargz_cached_file(downloaded_file_path, './cache')
         elif platform == "win32":
             self.unzip_cached_file(downloaded_file_path, './cache')
         
-        print("    ->  Done")
+        logger.info("    ->  Done")
 
-        print("Deleting downloaded file from ./cache/")
-        os.remove(downloaded_file_path)
-        print("    ->  Done")
+        logger.info("Deleting downloaded file from ./cache/")
+        self.vfm.remove_at_path(downloaded_file_path)
+        logger.info("    ->  Done")
         
 
         ############################################################
@@ -547,10 +552,10 @@ class VertexServerManager():
         else:
             new_server_number += 1
         new_server_localname = copy.copy(self.DATA['server_localnameTemplate']).replace("<NUMBER>", str(new_server_number))
-        print(f"New server name will be : {new_server_localname}")
+        logger.info(f"New server name will be : {new_server_localname}")
         
         # Move files
-        print("Move server file to ./servers/")
+        logger.info("Move server file to ./servers/")
         
         if platform == "linux" or platform == "linux2":
             server_source = "./cache/launcher/files/mcs_server_linux/Server"
@@ -559,16 +564,16 @@ class VertexServerManager():
         
         server_destination = f"./servers/{new_server_localname}"
         shutil.move(server_source, server_destination)
-        print("    ->  Done")
+        logger.info("    ->  Done")
 
 
         ############################################################
         # Remove useless files from cache
         
         if platform == "linux" or platform == "linux2":
-            print("Clean ./cache/ from useless files")
-            shutil.rmtree('./cache/launcher/')
-            print("    ->  Done")
+            logger.info("Clean ./cache/ from useless files")
+            self.vfm.remove_at_path('./cache/launcher/')
+            logger.info("    ->  Done")
 
         
         ############################################################
@@ -581,38 +586,38 @@ class VertexServerManager():
 
         ############################################################
         # Start server
-        print("Make first server start to generate conf files etc.")
+        logger.info("Make first server start to generate conf files etc.")
         server_pid = self.start_server_by_localname(new_server_localname)
 
         if psutil.pid_exists(server_pid):
-            print("    ->  Server has started correctly")
+            logger.info("    ->  Server has started correctly")
 
         # Wait for init to end
-        print("Waiting 6 seconds to let server do his init")
+        logger.info("Waiting 6 seconds to let server do his init")
         time.sleep(6)
-        print("    ->  Done")
+        logger.info("    ->  Done")
 
         # Checking that server is alive as expected
         if not psutil.pid_exists(server_pid):
-            print("!!!!! Server is not alive, something might be wrong !!!!!")
+            logger.info("!!!!! Server is not alive, something might be wrong !!!!!")
 
 
         ############################################################
         # Kill the server nicely to force save of config files
 
-        print("Shutting down the server properly")
+        logger.info("Shutting down the server properly")
         self.kill_server_by_localname(new_server_localname)
 
 
         ############################################################
         # Make symlink to add map folder to gameserver to optimize spacedisk
-        print("Make symlink of ./maps/ inside UserCreatedContent")
+        logger.info("Make symlink of ./maps/ inside UserCreatedContent")
         # That is the part that requires having Admin rights
         symlink_has_been_created = self.create_symlink("./maps/", f"./servers/{new_server_localname}/MCS/UserCreatedContent/maps/")
         if symlink_has_been_created:
-            print("    ->  Done")
+            logger.info("    ->  Done")
         else:
-            print("    ->  Error")
-        print("\n----------\n")
-        print(f"Server installation has finished for {new_server_localname}.")
-        print("\n----------\n")
+            logger.info("    ->  Error")
+        logger.info("\n----------\n")
+        logger.info(f"Server installation has finished for {new_server_localname}.")
+        logger.info("\n----------\n")
