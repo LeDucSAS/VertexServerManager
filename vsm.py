@@ -1,11 +1,16 @@
 # LeDucSAS - Vertex Server Manager (VSM)
 # License : Free art license 1.3 https://artlibre.org/
 
+import logging
 from sys import platform
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("Main")
 if platform == "darwin":
     print("MacOS/OSX not supported since no version exists or is planned for it.")
     print("Script will terminate.")
     sys.exit() 
+
 
 '''
 
