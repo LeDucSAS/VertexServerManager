@@ -105,6 +105,6 @@ class ModioDownloadManager():
         logger.info(f"Moving mod folder from cache to maps folder'.")
         self.vfm.move_folder(source, destination)
         if os.path.isdir(destination):
-            logger.info(f"Copy success '{destination}'.")
+            logger.info(f"Move success '{destination}'.")
         logger.debug("file_move_from_cache_and_overwrite_to_maps() => done")
 
