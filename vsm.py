@@ -4,7 +4,7 @@
 import logging
 from sys import platform
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s.%(msecs)04d:%(levelname)-8s: %(message)s')
 logger = logging.getLogger("Main")
 if platform == "darwin":
     print("MacOS/OSX not supported since no version exists or is planned for it.")
