@@ -70,3 +70,11 @@ class VsmFileManager():
         shutil.move(source_dir, destination_dir)
         logger.debug("move_folder() done")
 
+
+    def create_symlink(self, symlink_source_path, symlink_target_path):
+        os.symlink(
+            os.path.abspath(symlink_source_path), 
+            os.path.abspath(symlink_target_path)
+        )
+        return True
+

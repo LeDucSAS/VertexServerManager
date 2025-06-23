@@ -86,8 +86,6 @@ class VertexServerManager():
     DATA['gameServer_gamename'] = "Vertex Server"
 
 
-
-
     '''
 
 
@@ -186,14 +184,6 @@ class VertexServerManager():
                 if server_localname in server['server_localname']:
                     server_already_started = True
         return server_already_started
-
-
-    def create_symlink(self, symlink_source_path, symlink_target_path):
-        os.symlink(
-            os.path.abspath(symlink_source_path), 
-            os.path.abspath(symlink_target_path)
-        )
-        return True
 
 
     ##########
@@ -377,6 +367,7 @@ class VertexServerManager():
         if server_localname is not None:
             logger.info(f"Killing server {server_localname}...")
             server_pid = self.kill_server_by_localname(server_localname)
+            logger.debug(f"Killed PID {server_pid}")
         else:
             logger.info(f"No server found with id {server_port}")
 
@@ -402,8 +393,6 @@ class VertexServerManager():
 
     def restart_server_by_id(self, server_port):
         self.restart_server_by_localname(self.find_server_localname_by_id(server_port))
-
-
 
 
     '''
@@ -576,7 +565,7 @@ class VertexServerManager():
         # Make symlink to add map folder to gameserver to optimize spacedisk
         logger.info("Make symlink of ./maps/ inside UserCreatedContent")
         # That is the part that requires having Admin rights
-        symlink_has_been_created = self.create_symlink("./maps/", f"./servers/{new_server_localname}/MCS/UserCreatedContent/maps/")
+        symlink_has_been_created = self.vfm.create_symlink("./maps/", f"./servers/{new_server_localname}/MCS/UserCreatedContent/maps/")
         if symlink_has_been_created:
             logger.info("    ->  Done")
         else:
