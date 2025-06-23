@@ -69,3 +69,4 @@ class VsmFileManager():
         logger.info(f"Moving {source_dir} to {destination_dir}")
         shutil.move(source_dir, destination_dir)
         logger.debug("move_folder() done")
+

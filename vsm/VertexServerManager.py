@@ -1,11 +1,27 @@
+import copy
 import logging
+import os
+import psutil
+import re
+import requests
+import signal
+import stat
+import subprocess
+import time
+import vsm.VsmFileManager as VsmFileManager
+from subprocess import CalledProcessError
+from subprocess import check_output
+from sys import platform
+from urllib.request import urlopen
+
+
 logger = logging.getLogger("VertexServerManager")
 
-import vsm.VsmFileManager as VsmFileManager
 
 class VertexServerManager():
     def __init__(self):
         self.vfm = VsmFileManager.VsmFileManager()
+
 
     """
 
@@ -33,7 +49,6 @@ class VertexServerManager():
     -- Global functions
     def create_server_folder_structure    (self, server_init_path=None):
     def download_file_to_cache            (self, url_to_download):
-    def untargz_cached_file               (self, tarGzFilePath, extractTargetPath):
     def install_linux_game_server         (self, choosen_version=None):
 
     """
@@ -46,6 +61,8 @@ class VertexServerManager():
 
 
     '''
+
+
     DATA = {}
 
     DATA['playVertexRoot']              = "https://www.playvertex.com"
@@ -78,10 +95,11 @@ class VertexServerManager():
 
 
     '''
+
+
     ##########
     # CHECK THINGS
     def is_folder_has_been_initialized(self, directory_path=None):
-        import os
         if directory_path == None:
             directory_path = os.getcwd()
 
@@ -94,13 +112,8 @@ class VertexServerManager():
         else:
             return False
 
-    def get_all_started_servers(self):
-        import psutil
-        import os
-        from sys import platform
-        from subprocess import check_output
-        from subprocess import CalledProcessError   
 
+    def get_all_started_servers(self): 
         active_server_list = []
 
         if platform == "linux" or platform == "linux2":
@@ -162,7 +175,6 @@ class VertexServerManager():
                             # "server_gamename"  : ' '.join(splitted_line[4:-1]).split("=")[1][1:-2]
                         }
                         active_server_list.append(server_data)
-
         return active_server_list
 
 
@@ -177,7 +189,6 @@ class VertexServerManager():
 
 
     def create_symlink(self, symlink_source_path, symlink_target_path):
-        import os
         os.symlink(
             os.path.abspath(symlink_source_path), 
             os.path.abspath(symlink_target_path)
@@ -188,8 +199,6 @@ class VertexServerManager():
     ##########
     # GET INFORMATIONS
     def get_server_list_full_Path(self, directory_path):
-        import os
-
         if self.is_folder_has_been_initialized():
             rootdir = f"{directory_path}/servers/"
             if os.listdir(rootdir): 
@@ -202,10 +211,8 @@ class VertexServerManager():
         else:
             return None
 
-    def get_server_list_only_localname(self, directory_path=None):
-        import os
-        import re
 
+    def get_server_list_only_localname(self, directory_path=None):
         if directory_path == None:
             directory_path = os.getcwd()
 
@@ -219,8 +226,8 @@ class VertexServerManager():
         else:
             return None
 
+
     def find_server_localname_by_id(self, server_port):
-        import os
         directory_path = os.getcwd()
         serverList = self.get_server_list_only_localname(directory_path)
         has_server_localname_been_found = False
@@ -234,9 +241,6 @@ class VertexServerManager():
 
 
     def get_current_highest_gameserver_id(self, directory_path=None):
-        import os
-        import re
-
         if directory_path == None:
             directory_path = os.getcwd()
 
@@ -255,11 +259,6 @@ class VertexServerManager():
     ##########
     # START SERVER
     def start_server_by_localname(self, server_localname):
-        import subprocess
-        import re
-        import os
-        from sys import platform
-        
         logger.info(f"    ->  Starting server {server_localname} ...")
 
         if int(self.DATA['gameServer_port']) < 1:
@@ -296,7 +295,6 @@ class VertexServerManager():
             stderr=subprocess.STDOUT,
             creationflags=DETACHED_PROCESS,
             shell=True)
-            import time
             time.sleep(6)
 
         logger.info(f"    ->  Server {server_localname} has been started")
@@ -305,6 +303,7 @@ class VertexServerManager():
         logger.info(f"    ->    Mode      - {argument_gamemode}")
         logger.info(f"    ->    Map       - {argument_map}")
         return server.pid
+
 
     def start_server_by_id(self, server_port):
         server_localname = self.find_server_localname_by_id(server_port)
@@ -322,13 +321,6 @@ class VertexServerManager():
     ##########
     # STOP SERVER 
     def kill_server_by_localname(self, server_localname):
-        import os
-        import psutil
-        import signal
-        import subprocess
-        import time
-        from subprocess import check_output
-        
         logger.info(f"    ->  Shutdowning server {server_localname} ...")
 
         server_is_active = self.is_server_already_started(server_localname)
@@ -378,6 +370,7 @@ class VertexServerManager():
         except subprocess.CalledProcessError as e:
             logger.info(f"    ->  Server {server_localname} has been shutdown")
 
+
     def kill_server_by_id(self, server_port):
         server_localname = self.find_server_localname_by_id(server_port)
 
@@ -387,13 +380,9 @@ class VertexServerManager():
         else:
             logger.info(f"No server found with id {server_port}")
 
+
     # RESTART
     def restart_server_by_localname(self, server_localname):
-        import time
-        import psutil
-        import os
-        from subprocess import check_output
-
         fullServerList = self.get_server_list_only_localname(os.getcwd())
         if fullServerList is not None:
             startedServerList = self.get_all_started_servers()
@@ -425,9 +414,8 @@ class VertexServerManager():
 
     '''
 
-    def create_server_folder_structure(self, server_init_path=None):
-        import os
 
+    def create_server_folder_structure(self, server_init_path=None):
         if server_init_path is None:
             server_init_path = os.getcwd()
 
@@ -462,7 +450,6 @@ class VertexServerManager():
 
 
     def download_file_to_cache(self, url_to_download):
-        from urllib.request import urlopen
         filename = url_to_download.split("/")[-1:][0]
         cache_file_path = f"cache/{filename}"
         # Download from URL
@@ -474,29 +461,7 @@ class VertexServerManager():
         return cache_file_path
 
 
-    def untargz_cached_file(self, tarGzFilePath, extractTargetPath):
-        import tarfile
-        fileExtractor = tarfile.open(tarGzFilePath)
-        fileExtractor.extractall(extractTargetPath)
-        fileExtractor.close()
-
-        
-    def unzip_cached_file(self, zipFilePath, extractTargetPath):
-        import zipfile
-        with zipfile.ZipFile(zipFilePath, 'r') as zip_ref:
-            zip_ref.extractall(extractTargetPath)
-
-
     def install_game_server(self, choosen_version=None):
-        import copy
-        import os
-        import psutil
-        import shutil
-        import stat
-        import subprocess
-        import time
-        from sys import platform
-
         global DATA
         
         if platform == "linux" or platform == "linux2":
@@ -506,9 +471,7 @@ class VertexServerManager():
         elif platform == "win32":
             ...
 
-
         if choosen_version is None:
-            import requests
             response = requests.get(self.DATA['apiVersion'])
             choosen_version = response.json()['version']
         
@@ -533,9 +496,9 @@ class VertexServerManager():
         logger.info("Extracting server archive file into ./cache/")
         
         if platform == "linux" or platform == "linux2":
-            self.untargz_cached_file(downloaded_file_path, './cache')
+            self.vfm.untargz_file(downloaded_file_path, './cache')
         elif platform == "win32":
-            self.unzip_cached_file(downloaded_file_path, './cache')
+            self.vfm.unzip_file(downloaded_file_path, './cache')
         
         logger.info("    ->  Done")
 
@@ -563,7 +526,7 @@ class VertexServerManager():
             server_source = "./cache/Server"
         
         server_destination = f"./servers/{new_server_localname}"
-        shutil.move(server_source, server_destination)
+        self.vfm.move_folder(server_source, server_destination)
         logger.info("    ->  Done")
 
 
@@ -621,3 +584,4 @@ class VertexServerManager():
         logger.info("\n----------\n")
         logger.info(f"Server installation has finished for {new_server_localname}.")
         logger.info("\n----------\n")
+

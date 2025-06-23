@@ -1,8 +1,16 @@
 # LeDucSAS - Vertex Server Manager (VSM)
 # License : Free art license 1.3 https://artlibre.org/
 
+import argparse
+import ctypes
 import logging
+import os
+import sys
+import yaml
 from sys import platform
+from vsm.VertexServerManager import VertexServerManager
+from vsm.IniFileEditor import IniFileEditor
+from vsm.ModioDownloadManager import ModioDownloadManager
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s.%(msecs)04d:%(levelname)-8s: %(message)s')
 logger = logging.getLogger("Main")
@@ -44,9 +52,6 @@ ARGPARSE AREA
 '''
 
 
-import argparse
-import os
-import sys
 
 parser = argparse.ArgumentParser( description="LeDucSAS - Vertex Server Manager", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
@@ -102,9 +107,9 @@ Command line arguments interpretation
 
 
 '''
-from vsm.VertexServerManager import VertexServerManager
+
+
 vsm = VertexServerManager()
-from vsm.IniFileEditor import IniFileEditor
 ife = IniFileEditor()
 
 # Server parameter
@@ -145,7 +150,6 @@ if config["list_servers"] == True:
 
 # Do server install
 if config["install_server"] == True:
-    from sys import platform
     if platform == "linux" or platform == "linux2":
         vsm.install_game_server()
     elif platform == "win32":
@@ -156,7 +160,6 @@ if config["install_server"] == True:
         print("Anything in ./maps/ folder is common to all other servers and do not need to dupplicates.")
         print("\n")
 
-        import ctypes, sys
         def is_admin():
             try:
                 is_admin_value = ctypes.windll.shell32.IsUserAnAdmin()
@@ -302,8 +305,6 @@ if config["ini_update_server_id"]:
 
 # Install new modfile
 if config["install_mod"]:
-    import yaml
-    from vsm.ModioDownloadManager import ModioDownloadManager
     if os.path.isfile('./conf/modio.yaml'):
         with open('./conf/modio.yaml', 'r') as file:
             modio_config = yaml.safe_load(file)
