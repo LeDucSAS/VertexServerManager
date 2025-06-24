@@ -3,7 +3,6 @@ import logging
 import psutil
 import os
 import requests
-import re
 import stat
 import time
 from vsm.VertexServerDownloader import VertexServerDownloader

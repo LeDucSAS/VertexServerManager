@@ -1,6 +1,5 @@
 import requests
 import os
-import shutil
 import vsm.VsmFileManager as VsmFileManager
 import logging
 logger = logging.getLogger("ModioDownloadManager")
