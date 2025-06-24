@@ -1,18 +1,15 @@
-import copy
 import logging
 import os
 import psutil
 import re
-import requests
 import signal
-import stat
 import subprocess
 import time
-import vsm.VsmFileManager as VsmFileManager
+from vsm.VsmFileManager import VsmFileManager
+from vsm.VsmData import VsmData
 from subprocess import CalledProcessError
 from subprocess import check_output
 from sys import platform
-from urllib.request import urlopen
 
 
 logger = logging.getLogger("VertexServerManager")
@@ -20,95 +17,26 @@ logger = logging.getLogger("VertexServerManager")
 
 class VertexServerManager():
     def __init__(self):
-        self.vfm = VsmFileManager.VsmFileManager()
+        self.vfm = VsmFileManager()
+        self.DATA = VsmData().DATA
 
 
     """
 
-    Class Structure
-    -- Global data
-    Data
-    def __init__(self):
-    
     -- Base functions
-    def is_folder_has_been_initialized    (self, directory_path=None):
     def get_all_started_servers           (self):
     def is_server_already_started         (self, server_localname):
-    def create_symlink                    (self, symlink_source_path, symlink_target_path):
-    def get_server_list_full_Path         (self, directory_path):
     def get_server_list_only_localname    (self, directory_path=None):
     def find_server_localname_by_id       (self, server_port):
-    def get_current_highest_gameserver_id (self, directory_path=None):
     def start_server_by_localname         (self, server_localname):
     def start_server_by_id                (self, server_port):
     def kill_server_by_localname          (self, server_localname):
     def kill_server_by_id                 (self, server_port):
     def restart_server_by_localname       (self, server_localname):
     def restart_server_by_id              (self, server_port):
-    
-    -- Global functions
-    def create_server_folder_structure    (self, server_init_path=None):
-    def download_file_to_cache            (self, url_to_download):
-    def install_linux_game_server         (self, choosen_version=None):
+
 
     """
-
-
-    '''
-
-
-    Global data
-
-
-    '''
-
-
-    DATA = {}
-
-    DATA['playVertexRoot']              = "https://www.playvertex.com"
-    DATA['filekPatchHostLinuxLatest']   = f"{DATA['playVertexRoot']}/patchhostlinux"
-    DATA['filekPatchHostWindowsLatest'] = f"{DATA['playVertexRoot']}/patchhostwindows"
-    DATA['filePatchLatest']             = f"{DATA['playVertexRoot']}/patch"
-    DATA['fileVertexServerFullWindows'] = f"{DATA['playVertexRoot']}/download/files/Vertex_Server_Windows_<VERSION>.zip"
-    DATA['fileVertexServerFullLinux']   = f"{DATA['playVertexRoot']}/download/files/Vertex_Server_Linux_<VERSION>.tar.gz"
-
-    DATA['apiRoot']             = "https://api.playvertex.com"
-    DATA['apiServers']          = f"{DATA['apiRoot']}/servers"
-    DATA['apiStats']            = f"{DATA['apiRoot']}/stats"
-    DATA['apiVersion']          = f"{DATA['apiRoot']}/version"
-
-    DATA['server_localnameTemplate'] = "GameServer<NUMBER>"
-    DATA['defaultStartingPort'] = 27070
-
-    DATA['gameServerMap']       = "P_FFA_COMPLEX"
-    DATA['gameServerMode']      = "OPEN"
-    DATA['gameServer_port']     = -1
-    DATA['gameServer_gamename'] = "Vertex Server"
-
-
-    '''
-
-
-    Base functions
-
-
-    '''
-
-
-    ##########
-    # CHECK THINGS
-    def is_folder_has_been_initialized(self, directory_path=None):
-        if directory_path == None:
-            directory_path = os.getcwd()
-
-        if (
-            os.path.exists(f"{directory_path}/maps")    and
-            os.path.exists(f"{directory_path}/servers") and
-            os.path.exists(f"{directory_path}/cache")
-        ):
-            return True
-        else:
-            return False
 
 
     def get_all_started_servers(self): 
@@ -188,7 +116,46 @@ class VertexServerManager():
 
     ##########
     # GET INFORMATIONS
+
+
+    def is_folder_has_been_initialized(self, directory_path=None):
+        logger.debug("is_folder_has_been_initialized() ...")
+        result = False
+        if directory_path == None:
+            directory_path = os.getcwd()
+
+        if (
+            os.path.exists(f"{directory_path}/maps")    and
+            os.path.exists(f"{directory_path}/servers") and
+            os.path.exists(f"{directory_path}/cache")
+        ):
+            result = True
+        logger.debug(f"is_folder_has_been_initialized() returns {result}")
+        return result
+
+
+    def get_current_highest_gameserver_id(self, directory_path=None):
+        logger.debug("get_current_highest_gameserver_id() ...")
+        if directory_path == None:
+            directory_path = os.getcwd()
+
+        gameServerList = self.get_server_list_full_Path(directory_path)
+
+        if gameServerList is None or not gameServerList:
+            return None
+
+        tmp = []
+        for server in gameServerList:
+            tmp.append(int(re.sub('[^0-9]','', server)))
+        tmp.sort()
+        result = int(tmp[-1])
+        logger.debug(f"get_current_highest_gameserver_id() returns {result}")
+        return result
+    
+    
     def get_server_list_full_Path(self, directory_path):
+        logger.debug(f"get_server_list_full_Path() ...")
+        result = None
         if self.is_folder_has_been_initialized():
             rootdir = f"{directory_path}/servers/"
             if os.listdir(rootdir): 
@@ -197,9 +164,9 @@ class VertexServerManager():
                     d = os.path.join(rootdir, file)
                     if os.path.isdir(d):
                         gameServerList.append(d)
-                return gameServerList
-        else:
-            return None
+                result = gameServerList
+        logger.debug(f"get_server_list_full_Path() returns {result}")
+        return result
 
 
     def get_server_list_only_localname(self, directory_path=None):
@@ -228,22 +195,6 @@ class VertexServerManager():
                     return server_localname
         if not has_server_localname_been_found:
             return None
-
-
-    def get_current_highest_gameserver_id(self, directory_path=None):
-        if directory_path == None:
-            directory_path = os.getcwd()
-
-        gameServerList = self.get_server_list_full_Path(directory_path)
-
-        if gameServerList is None or not gameServerList:
-            return None
-
-        tmp = []
-        for server in gameServerList:
-            tmp.append(int(re.sub('[^0-9]','', server)))
-        tmp.sort()
-        return int(tmp[-1])
 
 
     ##########
@@ -393,184 +344,4 @@ class VertexServerManager():
 
     def restart_server_by_id(self, server_port):
         self.restart_server_by_localname(self.find_server_localname_by_id(server_port))
-
-
-    '''
-
-
-    Global functions
-
-
-    '''
-
-
-    def create_server_folder_structure(self, server_init_path=None):
-        if server_init_path is None:
-            server_init_path = os.getcwd()
-
-        logger.info("Check that path has not been initialized already.")
-        if not self.is_folder_has_been_initialized():
-            map_folder_path    = f"{server_init_path}/maps"
-            server_folder_path = f"{server_init_path}/servers"
-            cache_folder_path  = f"{server_init_path}/cache"
-
-            folders_to_create = []
-            folders_to_create.append(map_folder_path)
-            folders_to_create.append(server_folder_path)
-            folders_to_create.append(cache_folder_path)
-
-            for ftc in folders_to_create:
-                if not os.path.exists(ftc):
-                    logger.info(f"    Creating - {ftc}")
-                    os.makedirs(ftc)
-                else:
-                    logger.info(f"    Already exists - {ftc}")
-
-            logger.info("    ->  Current directory has been init for vertex servers.")
-        else:
-            logger.info("    ->  Seems directory has already been initialized")
-            logger.info("    ->  Please check for existence for the fallowing folders")
-            logger.info("            ./maps/")
-            logger.info("            ./servers/")
-            logger.info("            ./cache/")
-            logger.info("            ./vsm/")
-            logger.info("    ->  If init has failed, please remove all folders but ./vsm/")
-            logger.info("    ->  Init will stop")
-
-
-    def download_file_to_cache(self, url_to_download):
-        filename = url_to_download.split("/")[-1:][0]
-        cache_file_path = f"cache/{filename}"
-        # Download from URL
-        with urlopen(url_to_download) as file:
-            content = file.read()
-        # Save to file
-        with open(cache_file_path, 'wb') as download:
-            download.write(content)
-        return cache_file_path
-
-
-    def install_game_server(self, choosen_version=None):
-        global DATA
-        
-        if platform == "linux" or platform == "linux2":
-            ...
-        elif platform == "darwin":
-            logger.info("OSX not supported right now currently")
-        elif platform == "win32":
-            ...
-
-        if choosen_version is None:
-            response = requests.get(self.DATA['apiVersion'])
-            choosen_version = response.json()['version']
-        
-        if platform == "linux" or platform == "linux2":
-            url_to_download = copy.copy(self.DATA['fileVertexServerFullLinux']).replace("<VERSION>", choosen_version)
-        elif platform == "win32":
-            url_to_download = copy.copy(self.DATA['fileVertexServerFullWindows']).replace("<VERSION>", choosen_version)
-        
-
-        ############################################################
-        # Check init, download, unzip, clean cache
-        folder_has_been_init = self.is_folder_has_been_initialized(os.getcwd())
-        if not folder_has_been_init:
-            logger.info("Warning : Folder has not been init, script will stop.")
-            logger.info("You can init the folder doing like : python ./vsm.py --init")
-            return
-
-        logger.info("Downloading server archive to ./cache/ ...")
-        downloaded_file_path = self.download_file_to_cache(url_to_download)
-        logger.info("    ->  Done")
-
-        logger.info("Extracting server archive file into ./cache/")
-        
-        if platform == "linux" or platform == "linux2":
-            self.vfm.untargz_file(downloaded_file_path, './cache')
-        elif platform == "win32":
-            self.vfm.unzip_file(downloaded_file_path, './cache')
-        
-        logger.info("    ->  Done")
-
-        logger.info("Deleting downloaded file from ./cache/")
-        self.vfm.remove_at_path(downloaded_file_path)
-        logger.info("    ->  Done")
-        
-
-        ############################################################
-        # Define new server identity
-        new_server_number = self.get_current_highest_gameserver_id()
-        if new_server_number is None:
-            new_server_number = self.DATA['defaultStartingPort']
-        else:
-            new_server_number += 1
-        new_server_localname = copy.copy(self.DATA['server_localnameTemplate']).replace("<NUMBER>", str(new_server_number))
-        logger.info(f"New server name will be : {new_server_localname}")
-        
-        # Move files
-        logger.info("Move server file to ./servers/")
-        
-        if platform == "linux" or platform == "linux2":
-            server_source = "./cache/launcher/files/mcs_server_linux/Server"
-        elif platform == "win32":
-            server_source = "./cache/Server"
-        
-        server_destination = f"./servers/{new_server_localname}"
-        self.vfm.move_folder(server_source, server_destination)
-        logger.info("    ->  Done")
-
-
-        ############################################################
-        # Remove useless files from cache
-        
-        if platform == "linux" or platform == "linux2":
-            logger.info("Clean ./cache/ from useless files")
-            self.vfm.remove_at_path('./cache/launcher/')
-            logger.info("    ->  Done")
-
-        
-        ############################################################
-        # Make server binary executable
-        if platform == "linux" or platform == "linux2":
-            linux_binary = f"./servers/{new_server_localname}/MCS/Binaries/Linux/MCSServer"
-            st = os.stat(linux_binary)
-            os.chmod(linux_binary, st.st_mode | stat.S_IEXEC)
-
-
-        ############################################################
-        # Start server
-        logger.info("Make first server start to generate conf files etc.")
-        server_pid = self.start_server_by_localname(new_server_localname)
-
-        if psutil.pid_exists(server_pid):
-            logger.info("    ->  Server has started correctly")
-
-        # Wait for init to end
-        logger.info("Waiting 6 seconds to let server do his init")
-        time.sleep(6)
-        logger.info("    ->  Done")
-
-        # Checking that server is alive as expected
-        if not psutil.pid_exists(server_pid):
-            logger.info("!!!!! Server is not alive, something might be wrong !!!!!")
-
-
-        ############################################################
-        # Kill the server nicely to force save of config files
-
-        logger.info("Shutting down the server properly")
-        self.kill_server_by_localname(new_server_localname)
-
-
-        ############################################################
-        # Make symlink to add map folder to gameserver to optimize spacedisk
-        logger.info("Make symlink of ./maps/ inside UserCreatedContent")
-        # That is the part that requires having Admin rights
-        symlink_has_been_created = self.vfm.create_symlink("./maps/", f"./servers/{new_server_localname}/MCS/UserCreatedContent/maps/")
-        if symlink_has_been_created:
-            logger.info("    ->  Done")
-        else:
-            logger.info("    ->  Error")
-        logger.info("\n----------\n")
-        logger.info(f"Server installation has finished for {new_server_localname}.")
-        logger.info("\n----------\n")
 

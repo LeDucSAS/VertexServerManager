@@ -9,11 +9,15 @@ import sys
 import yaml
 from sys import platform
 from vsm.VertexServerManager import VertexServerManager
+from vsm.VertexServerInstaller import VertexServerInstaller
 from vsm.IniFileEditor import IniFileEditor
 from vsm.ModioDownloadManager import ModioDownloadManager
 
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s.%(msecs)04d:%(levelname)-8s: %(message)s')
 logger = logging.getLogger("Main")
+
+
 if platform == "darwin":
     print("MacOS/OSX not supported since no version exists or is planned for it.")
     print("Script will terminate.")
@@ -110,6 +114,7 @@ Command line arguments interpretation
 
 
 vsm = VertexServerManager()
+vsi = VertexServerInstaller()
 ife = IniFileEditor()
 
 # Server parameter
@@ -129,7 +134,7 @@ if config["set_server_mode"]:
 
 # Do init
 if config["init"] == True:
-    vsm.create_server_folder_structure()
+    vsi.create_server_folder_structure()
 
 # Do list servers
 if config["list_servers"] == True:
@@ -151,7 +156,7 @@ if config["list_servers"] == True:
 # Do server install
 if config["install_server"] == True:
     if platform == "linux" or platform == "linux2":
-        vsm.install_game_server()
+        vsi.install_game_server()
     elif platform == "win32":
         # Need to execute as admin because of symbolic linking map folder.
         print("\n")
@@ -175,7 +180,7 @@ if config["install_server"] == True:
             print("---------------------------\n")
             print("Vertex MCS Server installation procedure starts.\n")
             try:
-                vsm.install_game_server()
+                vsi.install_game_server()
             except:
                 input("\nAn error occured. Press enter to exit script.")
             
