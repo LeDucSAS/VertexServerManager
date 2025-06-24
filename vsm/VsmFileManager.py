@@ -3,7 +3,10 @@ import shutil
 import tarfile
 import zipfile
 import logging
+
+
 logger = logging.getLogger("VsmFileManager")
+
 
 class VsmFileManager():
 
@@ -72,9 +75,11 @@ class VsmFileManager():
 
 
     def create_symlink(self, symlink_source_path, symlink_target_path):
+        logger.debug("create_symlink() ...")
         os.symlink(
             os.path.abspath(symlink_source_path), 
             os.path.abspath(symlink_target_path)
         )
+        logger.debug("create_symlink() done")
         return True
 
