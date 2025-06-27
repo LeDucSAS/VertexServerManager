@@ -7,13 +7,18 @@ logger = logging.getLogger("VsmData")
 
 
 class VsmData():
+
     def __init__(self):
         self.DATA = None
-        server_conf_file = './conf/servers.yaml'
+        self.DATA = self.load_yaml_file('./conf/servers.yaml')
 
-        if os.path.isfile(server_conf_file):
-            with open(server_conf_file, 'r') as file:
-                self.DATA = yaml.safe_load(file)
+
+    def load_yaml_file(self, yaml_file_path):
+        yaml_data = None
+        if os.path.isfile(yaml_file_path):
+            with open(yaml_file_path, 'r') as file:
+                yaml_data = yaml.safe_load(file)
         else:
-            print(f"Please check ./conf/ folder if {server_conf_file} is here.")
+            logger.info(f"Please check ./conf/ folder if {yaml_file_path} is here.")
+        return yaml_data
 

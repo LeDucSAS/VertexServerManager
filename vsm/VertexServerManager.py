@@ -16,6 +16,7 @@ logger = logging.getLogger("VertexServerManager")
 
 
 class VertexServerManager():
+
     def __init__(self):
         self.vfm = VsmFileManager()
         self.DATA = VsmData().DATA
@@ -23,18 +24,20 @@ class VertexServerManager():
 
     """
 
-    -- Base functions
-    def get_all_started_servers           (self):
-    def is_server_already_started         (self, server_localname):
-    def get_server_list_only_localname    (self, directory_path=None):
-    def find_server_localname_by_id       (self, server_port):
-    def start_server_by_localname         (self, server_localname):
-    def start_server_by_id                (self, server_port):
-    def kill_server_by_localname          (self, server_localname):
-    def kill_server_by_id                 (self, server_port):
-    def restart_server_by_localname       (self, server_localname):
-    def restart_server_by_id              (self, server_port):
-
+    def __init__                            (self):
+    def get_all_started_servers             (self): 
+    def is_server_already_started           (self, server_localname):
+    def is_folder_has_been_initialized      (self, directory_path=None):
+    def get_current_highest_gameserver_id   (self, directory_path=None):
+    def get_server_list_full_Path           (self, directory_path):
+    def get_server_list_only_localname      (self, directory_path=None):
+    def find_server_localname_by_id         (self, server_port):
+    def start_server_by_localname           (self, server_localname):
+    def start_server_by_id                  (self, server_port):
+    def kill_server_by_localname            (self, server_localname):
+    def kill_server_by_id                   (self, server_port):
+    def restart_server_by_localname         (self, server_localname):
+    def restart_server_by_id                (self, server_port):
 
     """
 

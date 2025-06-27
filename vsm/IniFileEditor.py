@@ -1,4 +1,14 @@
+import configparser
+import os
+import ast
+import logging
+
+
+logger = logging.getLogger("IniFileEditor")
+
+
 class IniFileEditor():
+
     def __init__(self):
         ...
     """
@@ -12,16 +22,13 @@ class IniFileEditor():
 
     """
     def update_ini_file_value(self, server_localname, ini_filename, key_to_update, new_value):
-        import configparser
-        import os
-        import ast
         
         ini_file_path = "./servers/<SERVER_LOCALNAME>/MCS/Saved/Config/LinuxServer/<INI_FILENAME>"
         ini_file_path = ini_file_path.replace("<SERVER_LOCALNAME>", server_localname)
         ini_file_path = ini_file_path.replace("<INI_FILENAME>", ini_filename)
 
         if not os.path.exists(ini_file_path):
-            print(f"File '{ini_file_path}' not found.")
+            logger.info(f"File '{ini_file_path}' not found.")
             return False
 
         config_parser = configparser.ConfigParser()
@@ -55,12 +62,12 @@ class IniFileEditor():
                         config_parser.set(section, key_to_update, new_value)
                         with open(ini_file_path, 'w') as configfile:
                             config_parser.write(configfile, space_around_delimiters=False)
-                            print(f"Config key '{key_to_update}' of '{ini_file_path}' has been updated from '{original_value}' to '{new_value}'.")
+                            logger.info(f"Config key '{key_to_update}' of '{ini_file_path}' has been updated from '{original_value}' to '{new_value}'.")
                         break
                     else:
-                        print(f"Value mismatch : ini value is type '{type_of_ini_value}' and new value is type '{type_of_new_value}'.")
+                        logger.info(f"Value mismatch : ini value is type '{type_of_ini_value}' and new value is type '{type_of_new_value}'.")
                         break
 
         if not key_has_been_found:
-            print(f"Config key '{key_to_update}' has not been found inside '{ini_file_path}'.")
+            logger.info(f"Config key '{key_to_update}' has not been found inside '{ini_file_path}'.")
         return key_has_been_found

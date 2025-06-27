@@ -6,6 +6,7 @@ logger = logging.getLogger("VertexServerDownloader")
 
 
 class VertexServerDownloader():
+    
     def __init__(self):
         ...
 

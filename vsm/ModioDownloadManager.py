@@ -2,7 +2,10 @@ import requests
 import os
 import vsm.VsmFileManager as VsmFileManager
 import logging
+
+
 logger = logging.getLogger("ModioDownloadManager")
+
 
 class ModioDownloadManager():
 

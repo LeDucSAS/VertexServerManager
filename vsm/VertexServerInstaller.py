@@ -16,6 +16,7 @@ logger = logging.getLogger("VertexServerInstaller")
 
 
 class VertexServerInstaller():
+
     def __init__(self):
         self.vfm = VsmFileManager()
         self.vsm = VertexServerManager()
