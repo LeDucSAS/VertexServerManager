@@ -2,10 +2,10 @@ import logging
 from urllib.request import urlopen
 
 
-logger = logging.getLogger("VertexServerDownloader")
+logger = logging.getLogger("VsmDownloader")
 
 
-class VertexServerDownloader():
+class VsmDownloader():
     
     def __init__(self):
         ...
@@ -23,3 +23,4 @@ class VertexServerDownloader():
             download.write(content)
         logger.debug("download_file_to_cache() done")
         return cache_file_path
+

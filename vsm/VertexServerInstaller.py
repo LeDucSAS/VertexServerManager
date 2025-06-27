@@ -5,7 +5,7 @@ import os
 import requests
 import stat
 import time
-from vsm.VertexServerDownloader import VertexServerDownloader
+from vsm.VsmDownloader import VsmDownloader
 from vsm.VertexServerManager import VertexServerManager
 from vsm.VsmFileManager import VsmFileManager
 from vsm.VsmData import VsmData
@@ -20,7 +20,7 @@ class VertexServerInstaller():
     def __init__(self):
         self.vfm = VsmFileManager()
         self.vsm = VertexServerManager()
-        self.vsd = VertexServerDownloader()
+        self.vsd = VsmDownloader()
         self.SERVER_DEFAULT = VsmData().SERVER_DEFAULT
         self.URLS = VsmData().URLS
 
