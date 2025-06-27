@@ -11,19 +11,19 @@ class ModioDownloadManager():
 
     def __init__(self, yaml_data):
         self.enable_cache_purification = True
-        self.DATA = {}
+        self.MIODM = {}
         # Technical data to access the mod file
-        self.DATA["game_id"] = yaml_data["game_id"]
-        self.DATA["mod_id"] = ''
-        self.DATA["file_id"] = ''
-        self.DATA["api_key"] = yaml_data["api_key"]
+        self.MIODM["game_id"] = yaml_data["game_id"]
+        self.MIODM["mod_id"] = ''
+        self.MIODM["file_id"] = ''
+        self.MIODM["api_key"] = yaml_data["api_key"]
         # Technical data about the file
-        self.DATA["archive_url"] = ''
-        self.DATA["archive_name"] = ''
-        self.DATA["archive_type"] = ''
+        self.MIODM["archive_url"] = ''
+        self.MIODM["archive_name"] = ''
+        self.MIODM["archive_type"] = ''
         # Local data
-        self.DATA["downloaded_file_path"] = ''
-        self.DATA["extracted_file_path"] = ''
+        self.MIODM["downloaded_file_path"] = ''
+        self.MIODM["extracted_file_path"] = ''
         self.vfm = VsmFileManager.VsmFileManager()
     
 
@@ -36,21 +36,21 @@ class ModioDownloadManager():
         logger.debug("mod_install_direct_url() ...")
         try:
             game_id = direct_mod_file_url_to_download.split("/games/")[1].split("/")[0]
-            if not (int(self.DATA["game_id"]) == int(game_id)):
+            if not (int(self.MIODM["game_id"]) == int(game_id)):
                 return False
-            self.DATA["mod_id"] = direct_mod_file_url_to_download.split("/mods/")[1].split("/")[0]
-            self.DATA["file_id"] = direct_mod_file_url_to_download.split("/files/")[1].split("/")[0]
-            self.DATA["archive_url"] = f"https://api.mod.io/v1/games/{self.DATA['game_id']}/mods/{self.DATA['mod_id']}/files/{self.DATA['file_id']}/download?api_key={self.DATA['api_key']}"
+            self.MIODM["mod_id"] = direct_mod_file_url_to_download.split("/mods/")[1].split("/")[0]
+            self.MIODM["file_id"] = direct_mod_file_url_to_download.split("/files/")[1].split("/")[0]
+            self.MIODM["archive_url"] = f"https://api.mod.io/v1/games/{self.MIODM['game_id']}/mods/{self.MIODM['mod_id']}/files/{self.MIODM['file_id']}/download?api_key={self.MIODM['api_key']}"
         except:
             logger.critical("An exception occurred")
             return False
 
         if(self.enable_cache_purification):
             self.vfm.cache_purification() # Removes everything but .gitignore
-        self.file_download_to_cache(self.DATA["archive_url"], self.DATA["mod_id"])
-        self.file_extract_to_cache(self.DATA["downloaded_file_path"], self.DATA["mod_id"])
-        self.file_move_from_cache_and_overwrite_to_maps(self.DATA["mod_id"])
-        self.vfm.cache_mod_cleanup(f"{os.getcwd()}/cache/{self.DATA["mod_id"]}/", f"{os.getcwd()}/cache/{self.DATA["archive_name"]}")
+        self.file_download_to_cache(self.MIODM["archive_url"], self.MIODM["mod_id"])
+        self.file_extract_to_cache(self.MIODM["downloaded_file_path"], self.MIODM["mod_id"])
+        self.file_move_from_cache_and_overwrite_to_maps(self.MIODM["mod_id"])
+        self.vfm.cache_mod_cleanup(f"{os.getcwd()}/cache/{self.MIODM["mod_id"]}/", f"{os.getcwd()}/cache/{self.MIODM["archive_name"]}")
         
         logger.debug("mod_install_direct_url() => done")
 
@@ -60,12 +60,12 @@ class ModioDownloadManager():
         # Getting the file data
         response = requests.get(url_to_download, stream=True, allow_redirects=True)
 
-        self.DATA["archive_type"] = response.headers.get("Content-Type").split("/")[1]
-        self.DATA["archive_name"] = response.url.split("?")[0].split("/")[-1]
-        self.DATA["downloaded_file_path"] = f"cache/{self.DATA["archive_name"]}"
+        self.MIODM["archive_type"] = response.headers.get("Content-Type").split("/")[1]
+        self.MIODM["archive_name"] = response.url.split("?")[0].split("/")[-1]
+        self.MIODM["downloaded_file_path"] = f"cache/{self.MIODM["archive_name"]}"
 
-        with open(self.DATA["downloaded_file_path"], 'wb') as fd:
-            logger.info(f'Downloading {self.DATA["downloaded_file_path"]}')
+        with open(self.MIODM["downloaded_file_path"], 'wb') as fd:
+            logger.info(f'Downloading {self.MIODM["downloaded_file_path"]}')
             total_length = response.headers.get('content-length')
             if total_length is None: # no content length header
                 fd.write(response.content)
@@ -81,17 +81,17 @@ class ModioDownloadManager():
                     if(done == nextdone):
                         logger.info(f"Download {done}%")
                         nextdone = nextdone + 20
-            logger.info(f'Downloaded {self.DATA["downloaded_file_path"]}')
+            logger.info(f'Downloaded {self.MIODM["downloaded_file_path"]}')
         logger.debug("file_download_to_cache() => done")
 
 
     def file_extract_to_cache(self, file_path, mod_id):
         logger.debug("file_extract_to_cache() ...")
         # Create a folder with the ID of the mod so it easier to update
-        self.DATA["extracted_file_path"] = f'{os.getcwd()}/cache/{mod_id}'
-        target_path = self.DATA["extracted_file_path"]
+        self.MIODM["extracted_file_path"] = f'{os.getcwd()}/cache/{mod_id}'
+        target_path = self.MIODM["extracted_file_path"]
         os.mkdir(target_path)
-        file_ext = self.DATA["archive_name"].split(".")[1]
+        file_ext = self.MIODM["archive_name"].split(".")[1]
         if file_ext == "zip":
             self.vfm.unzip_file(file_path, target_path)
         logger.debug("file_extract_to_cache() => done")

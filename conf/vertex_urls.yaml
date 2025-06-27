@@ -1,0 +1,16 @@
+---
+# Vertex website data
+vertex_website:
+  playVertexRoot              : "https://www.playvertex.com"
+  filePatchHostLinuxLatest    : "https://www.playvertex.com/patchhostlinux"
+  filePatchHostWindowsLatest  : "https://www.playvertex.com/patchhostwindows"
+  filePatchLatest             : "https://www.playvertex.com/patch"
+  fileVertexServerFullWindows : "https://www.playvertex.com/download/files/Vertex_Server_Windows_<VERSION>.zip"
+  fileVertexServerFullLinux   : "https://www.playvertex.com/download/files/Vertex_Server_Linux_<VERSION>.tar.gz"
+# Vertex API data
+vertex_api:
+  root    : "https://api.playvertex.com"
+  servers : "https://api.playvertex.com/servers"
+  stats   : "https://api.playvertex.com/stats"
+  version : "https://api.playvertex.com/version"
+...

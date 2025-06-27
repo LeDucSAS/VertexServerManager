@@ -1,0 +1,13 @@
+# Default data used for configuration
+---
+# Default server values related to server installation
+# Default folder name for vertex servers, <NUMBER> being used as the port and ID
+name_template : "GameServer<NUMBER>"
+# The default starting port, which is also the default ID
+starting_port : 27070
+# Default game server parameters when a server is started without params
+map  : "P_FFA_COMPLEX"
+mode : "OPEN"
+port : -1
+name : "Vertex Server"
+...

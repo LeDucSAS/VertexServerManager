@@ -21,7 +21,8 @@ class VertexServerInstaller():
         self.vfm = VsmFileManager()
         self.vsm = VertexServerManager()
         self.vsd = VertexServerDownloader()
-        self.DATA = VsmData().DATA
+        self.SERVER_DEFAULT = VsmData().SERVER_DEFAULT
+        self.URLS = VsmData().URLS
 
 
     def create_server_folder_structure(self, server_init_path=None):
@@ -65,7 +66,6 @@ class VertexServerInstaller():
     def install_game_server(self, choosen_version=None):
         logger.debug("install_game_server() ...")
         logger.debug(f"Param choosen_version is {choosen_version}")
-        global DATA
         
         logger.debug(f"Platform is {platform}")
         if platform == "linux" or platform == "linux2":
@@ -76,14 +76,14 @@ class VertexServerInstaller():
             ...
 
         if choosen_version is None:
-            response = requests.get(self.DATA['apiVersion'])
+            response = requests.get(self.URLS["vertex_api"]["version"])
             choosen_version = response.json()['version']
         
         logger.debug(f"Preparing url_to_download for platform {platform}")
         if platform == "linux" or platform == "linux2":
-            url_to_download = copy.copy(self.DATA['fileVertexServerFullLinux']).replace("<VERSION>", choosen_version)
+            url_to_download = copy.copy(self.URLS["vertex_website"]["fileVertexServerFullLinux"]).replace("<VERSION>", choosen_version)
         elif platform == "win32":
-            url_to_download = copy.copy(self.DATA['fileVertexServerFullWindows']).replace("<VERSION>", choosen_version)
+            url_to_download = copy.copy(self.URLS["vertex_website"]["fileVertexServerFullWindows"]).replace("<VERSION>", choosen_version)
         
 
         ############################################################
@@ -116,11 +116,11 @@ class VertexServerInstaller():
         # Define new server identity
         new_server_number = self.vsm.get_current_highest_gameserver_id()
         if new_server_number is None:
-            new_server_number = self.DATA['defaultStartingPort']
+            new_server_number = self.SERVER_DEFAULT['starting_port']
         else:
             new_server_number += 1
         logger.info(f"New server ID will be : {new_server_number}")
-        new_server_localname = copy.copy(self.DATA['server_localnameTemplate']).replace("<NUMBER>", str(new_server_number))
+        new_server_localname = copy.copy(self.SERVER_DEFAULT['name_template']).replace("<NUMBER>", str(new_server_number))
         logger.info(f"New server name will be : {new_server_localname}")
         
         # Move files

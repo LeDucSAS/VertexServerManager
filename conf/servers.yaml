@@ -1,20 +1,3 @@
-# Servers data stored there
-# https://python.land/data-processing/python-yaml
+# Data concerning locally installed servers
 ---
-playVertexRoot              : "https://www.playvertex.com"
-filePatchHostLinuxLatest    : "https://www.playvertex.com/patchhostlinux"
-filePatchHostWindowsLatest  : "https://www.playvertex.com/patchhostwindows"
-filePatchLatest             : "https://www.playvertex.com/patch"
-fileVertexServerFullWindows : "https://www.playvertex.com/download/files/Vertex_Server_Windows_<VERSION>.zip"
-fileVertexServerFullLinux   : "https://www.playvertex.com/download/files/Vertex_Server_Linux_<VERSION>.tar.gz"
-apiRoot    : "https://api.playvertex.com"
-apiServers : "https://api.playvertex.com/servers"
-apiStats   : "https://api.playvertex.com/stats"
-apiVersion : "https://api.playvertex.com/version"
-server_localnameTemplate : "GameServer<NUMBER>"
-defaultStartingPort      : 27070
-gameServerMap       : "P_FFA_COMPLEX"
-gameServerMode      : "OPEN"
-gameServer_port     : -1
-gameServer_gamename : "Vertex Server"
 ...

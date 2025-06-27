@@ -119,17 +119,17 @@ ife = IniFileEditor()
 
 # Server parameter
 if config["set_server_name"]:
-    vsm.DATA['gameServer_gamename'] = config["set_server_name"]
+    vsm.SERVER_PARAMS['name'] = config["set_server_name"]
 
 if config["set_server_port"] is not None:
     if config["set_server_port"] > 0:
-        vsm.DATA['gameServer_port'] = config["set_server_port"]
+        vsm.SERVER_PARAMS['port'] = config["set_server_port"]
 
 if config["set_server_map"]:
-    vsm.DATA['gameServerMap'] = config["set_server_map"]
+    vsm.SERVER_PARAMS['map'] = config["set_server_map"]
 
 if config["set_server_mode"]:
-    vsm.DATA['gameServerMode'] = config["set_server_mode"]
+    vsm.SERVER_PARAMS['mode'] = config["set_server_mode"]
 
 
 # Do init

@@ -9,8 +9,9 @@ logger = logging.getLogger("VsmData")
 class VsmData():
 
     def __init__(self):
-        self.DATA = None
-        self.DATA = self.load_yaml_file('./conf/servers.yaml')
+        self.SERVER_DEFAULT = self.load_yaml_file('./conf/server_default.yaml')
+        self.SERVERS = self.load_yaml_file('./conf/servers.yaml')
+        self.URLS = self.load_yaml_file('./conf/vertex_urls.yaml')
 
 
     def load_yaml_file(self, yaml_file_path):

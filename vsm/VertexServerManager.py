@@ -19,7 +19,8 @@ class VertexServerManager():
 
     def __init__(self):
         self.vfm = VsmFileManager()
-        self.DATA = VsmData().DATA
+        self.SERVER_DEFAULT = VsmData().SERVER_DEFAULT
+        self.SERVER_PARAMS = VsmData().SERVER_DEFAULT
 
 
     """
@@ -205,24 +206,24 @@ class VertexServerManager():
     def start_server_by_localname(self, server_localname):
         logger.info(f"    ->  Starting server {server_localname} ...")
 
-        if int(self.DATA['gameServer_port']) < 1:
-            self.DATA['gameServer_port'] = re.sub('[^0-9]','', server_localname)
+        if int(self.SERVER_DEFAULT['port']) < 1:
+            self.SERVER_DEFAULT['port'] = re.sub('[^0-9]','', server_localname)
 
         if platform == "linux" or platform == "linux2":
-            serverBinaryPath = f"./servers/{server_localname}/MCS/Binaries/Linux/MCSServer"
+            server_binary_path = f"./servers/{server_localname}/MCS/Binaries/Linux/MCSServer"
         elif platform == "win32":
-            serverBinaryPath = f"./servers/{server_localname}/MCS/Binaries/Win64/MCSServer.exe"
+            server_binary_path = f"./servers/{server_localname}/MCS/Binaries/Win64/MCSServer.exe"
         
-        serverBinaryPath = os.path.abspath(serverBinaryPath)
-        argument_map = self.DATA['gameServerMap']
-        argument_gamemode = self.DATA['gameServerMode']
-        argument_port = self.DATA['gameServer_port']
-        argument_gamename = self.DATA['gameServer_gamename']
+        server_binary_path = os.path.abspath(server_binary_path)
+        argument_map      = self.SERVER_DEFAULT['map']
+        argument_gamemode = self.SERVER_DEFAULT['mode']
+        argument_port     = self.SERVER_DEFAULT['port']
+        argument_gamename = self.SERVER_DEFAULT['name']
 
         if platform == "linux" or platform == "linux2":
             server_arguments = f"{argument_map}?game={argument_gamemode} -port={argument_port} -servername='{argument_gamename}'"
             server = subprocess.Popen([
-                f"{serverBinaryPath} {server_arguments}"
+                f"{server_binary_path} {server_arguments}"
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -230,7 +231,7 @@ class VertexServerManager():
         elif platform == "win32":
             DETACHED_PROCESS = 0x00000008
             server = subprocess.Popen([
-                serverBinaryPath, 
+                server_binary_path, 
                 f"{argument_map}?game={argument_gamemode}",
                 f"-port={argument_port}",
                 f"-servername='{argument_gamename}'"
@@ -333,10 +334,10 @@ class VertexServerManager():
             startedServerList = self.get_all_started_servers()
             for startedServer in startedServerList:
                 if server_localname in startedServer["server_localname"]:
-                    self.DATA['gameServer_port'] = startedServer["server_port"]
-                    self.DATA['gameServerMode'] = startedServer["server_mode"]
-                    self.DATA['gameServerMap'] = startedServer["server_map"]
-                    self.DATA['gameServer_gamename'] = startedServer["server_gamename"]
+                    self.SERVER_DEFAULT['port'] = startedServer["server_port"]
+                    self.SERVER_DEFAULT['mode'] = startedServer["server_mode"]
+                    self.SERVER_DEFAULT['map']  = startedServer["server_map"]
+                    self.SERVER_DEFAULT['name'] = startedServer["server_gamename"]
 
                     self.kill_server_by_localname(server_localname)
                     time.sleep(1)
