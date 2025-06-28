@@ -96,7 +96,8 @@ class VertexServerInstaller():
             return
 
         logger.info("Downloading server archive to ./cache/ ...")
-        downloaded_file_path = self.vsd.download_file_to_cache(url_to_download)
+        downloaded_file = self.vsd.download_to_cache(url_to_download)
+        downloaded_file_path = f"cache/{downloaded_file}"
         logger.info("    ->  Done")
 
         logger.info("Extracting server archive file into ./cache/")
