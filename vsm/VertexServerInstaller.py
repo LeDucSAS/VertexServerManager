@@ -18,11 +18,12 @@ logger = logging.getLogger("VertexServerInstaller")
 class VertexServerInstaller():
 
     def __init__(self):
+        data_store = VsmData()
         self.vfm = VsmFileManager()
         self.vsm = VertexServerManager()
         self.vsd = VsmDownloader()
-        self.SERVER_DEFAULT = VsmData().SERVER_DEFAULT
-        self.URLS = VsmData().URLS
+        self.SERVER_DEFAULT = data_store.SERVER_DEFAULT
+        self.URLS = data_store.URLS
 
 
     def create_server_folder_structure(self, server_init_path=None):
