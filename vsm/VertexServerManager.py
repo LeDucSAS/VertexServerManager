@@ -206,8 +206,8 @@ class VertexServerManager():
     def start_server_by_localname(self, server_localname):
         logger.info(f"    ->  Starting server {server_localname} ...")
 
-        if int(self.SERVER_DEFAULT['port']) < 1:
-            self.SERVER_DEFAULT['port'] = re.sub('[^0-9]','', server_localname)
+        if int(self.SERVER_PARAMS['port']) < 1:
+            self.SERVER_PARAMS['port'] = re.sub('[^0-9]','', server_localname)
 
         if platform == "linux" or platform == "linux2":
             server_binary_path = f"./servers/{server_localname}/MCS/Binaries/Linux/MCSServer"
@@ -215,10 +215,10 @@ class VertexServerManager():
             server_binary_path = f"./servers/{server_localname}/MCS/Binaries/Win64/MCSServer.exe"
         
         server_binary_path = os.path.abspath(server_binary_path)
-        argument_map      = self.SERVER_DEFAULT['map']
-        argument_gamemode = self.SERVER_DEFAULT['mode']
-        argument_port     = self.SERVER_DEFAULT['port']
-        argument_gamename = self.SERVER_DEFAULT['name']
+        argument_map      = self.SERVER_PARAMS['map']
+        argument_gamemode = self.SERVER_PARAMS['mode']
+        argument_port     = self.SERVER_PARAMS['port']
+        argument_gamename = self.SERVER_PARAMS['name']
 
         if platform == "linux" or platform == "linux2":
             server_arguments = f"{argument_map}?game={argument_gamemode} -port={argument_port} -servername='{argument_gamename}'"
@@ -334,10 +334,10 @@ class VertexServerManager():
             startedServerList = self.get_all_started_servers()
             for startedServer in startedServerList:
                 if server_localname in startedServer["server_localname"]:
-                    self.SERVER_DEFAULT['port'] = startedServer["server_port"]
-                    self.SERVER_DEFAULT['mode'] = startedServer["server_mode"]
-                    self.SERVER_DEFAULT['map']  = startedServer["server_map"]
-                    self.SERVER_DEFAULT['name'] = startedServer["server_gamename"]
+                    self.SERVER_PARAMS['port'] = startedServer["server_port"]
+                    self.SERVER_PARAMS['mode'] = startedServer["server_mode"]
+                    self.SERVER_PARAMS['map']  = startedServer["server_map"]
+                    self.SERVER_PARAMS['name'] = startedServer["server_gamename"]
 
                     self.kill_server_by_localname(server_localname)
                     time.sleep(1)
