@@ -20,6 +20,6 @@ class VsmData():
             with open(yaml_file_path, 'r') as file:
                 yaml_data = yaml.safe_load(file)
         else:
-            logger.info(f"Please check ./conf/ folder if {yaml_file_path} is here.")
+            logger.warning(f"Please check ./conf/ folder if {yaml_file_path} is here.")
         return yaml_data
 
