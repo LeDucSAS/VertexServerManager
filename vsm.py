@@ -90,6 +90,10 @@ parser.add_argument('--ini-new-value'       , nargs='?'          , const=None, t
 # Mod installation from mod.io
 parser.add_argument('--install-mod', nargs='?', const=None, type=str, help="Input URL of mod.io file to download")
 
+# Scheduler start and stop
+parser.add_argument("--scheduler-start", action="store_true", help="Start the scheduler")
+parser.add_argument("--scheduler-stop" , action="store_true", help="Stop the scheduler")
+
 
 # Save and make parser
 args = parser.parse_args()
@@ -288,4 +292,14 @@ if config["install_mod"]:
     do_install_mod = VsmTask().create(VsmTaskType.MOD_INSTALL)
     do_install_mod["mod_url"] = config["install_mod"]
     vse.execute(do_install_mod)
+
+
+# Start task scheduler
+if config["scheduler_start"]:
+    vse.execute(VsmTask().create(VsmTaskType.SCHEDULER_START))
+
+
+# Stop task scheduler
+if config["scheduler_stop"]:
+    vse.execute(VsmTask().create(VsmTaskType.SCHEDULER_STOP))
 

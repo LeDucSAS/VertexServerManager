@@ -8,4 +8,5 @@ dependencies = [
     "psutil",
     "requests",
     "pyyaml",
+    "schedule",
 ]

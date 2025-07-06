@@ -7,17 +7,21 @@ import yaml
 from vsm.ModioDownloadManager import ModioDownloadManager
 from vsm.VertexServerInstaller import VertexServerInstaller
 from vsm.VertexServerManager import VertexServerManager
-from vsm.VsmTaskType import VsmTaskType
 from vsm.VsmFileManager import VsmFileManager
+from vsm.VsmTaskType import VsmTaskType
+from vsm.VsmScheduler import VsmScheduler
+
 
 logger = logging.getLogger("VsmTaskExecutor")
 
 
 class VsmTaskExecutor():
+
     def __init__(self):
         self.vfm = VsmFileManager()
         self.vsi = VertexServerInstaller()
         self.vsm = VertexServerManager()
+
 
     def execute(self, task:dict) -> None:
         task_type = task["task"]
@@ -29,6 +33,12 @@ class VsmTaskExecutor():
 
         if(task_type == VsmTaskType.MOD_INSTALL):
             self.__install_mod(task["mod_url"])
+
+        if(task_type == VsmTaskType.SCHEDULER_START):
+            self.__scheduler_switch_on()
+
+        if(task_type == VsmTaskType.SCHEDULER_STOP):
+            self.__scheduler_switch_off()
 
         if(task_type == VsmTaskType.SERVER_INSTALL):
             self.__game_server_install()
@@ -48,6 +58,8 @@ class VsmTaskExecutor():
         if(task_type == VsmTaskType.SERVER_RESTART_BY_LOCALNAME):
             self.__game_server_restart_by_localname(task["server_localname"])
 
+
+    # Mod install
     def __install_mod(self, mod_url:str) -> None:
         if os.path.isfile('./conf/modio.yaml'):
             with open('./conf/modio.yaml', 'r') as file:
@@ -58,6 +70,16 @@ class VsmTaskExecutor():
             logger.error("Please check ./conf/ folder, and create a modio.yaml file from template and add your api key into it.")
 
 
+    # Scheduler
+    def __scheduler_switch_on(self) -> None:
+        VsmScheduler.start()
+
+
+    def __scheduler_switch_off(self) -> None:
+        VsmScheduler.stop()
+
+
+    # Server start/stop/restart
     def __game_server_start(self, server_data:dict) -> None:
         if server_data["server_name"]:
             self.vsm.SERVER_PARAMS['name'] = server_data["server_name"]
@@ -75,10 +97,6 @@ class VsmTaskExecutor():
         self.vsm.restart_server_by_localname(server_localname_to_restart)
 
 
-    def __game_server_restart_by_id(self, server_id_to_restart:str) -> None:
-        self.vsm.restart_server_by_id(server_id_to_restart)
-
-
     def __game_server_stop_by_id(self, server_id_to_stop:str) -> None:
         self.vsm.kill_server_by_id(server_id_to_stop)
 
@@ -87,6 +105,11 @@ class VsmTaskExecutor():
         self.vsm.kill_server_by_localname(server_localname_to_stop)
 
 
+    def __game_server_restart_by_id(self, server_id_to_restart:str) -> None:
+        self.vsm.restart_server_by_id(server_id_to_restart)
+
+
+    # Server install
     def __game_server_install(self) -> None:
         if platform == "linux" or platform == "linux2":
             self.vsi.install_game_server()
@@ -115,8 +138,9 @@ class VsmTaskExecutor():
                     self.vsi.install_game_server()
                 except:
                     input("\nAn error occured. Press enter to exit script.")
-                
+
                 input("\nCourtesy input action to read logs.\nPress enter to terminate the script whenever you want.\n\n")
             else:
                 # Re-run the program with admin rights
                 ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+

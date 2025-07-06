@@ -20,9 +20,14 @@ class VsmTask():
             bundle["task"] = VsmTaskType.MOD_INSTALL
             bundle["mod_url"] = None
 
+        if(task_type == VsmTaskType.SCHEDULER_START):
+            bundle["task"] = VsmTaskType.SCHEDULER_START
+
+        if(task_type == VsmTaskType.SCHEDULER_STOP):
+            bundle["task"] = VsmTaskType.SCHEDULER_STOP
+
         if(task_type == VsmTaskType.SERVER_INSTALL):
             bundle["task"] = VsmTaskType.SERVER_INSTALL
-            bundle["server_id"] = None
 
         if(task_type == VsmTaskType.SERVER_RESTART_BY_ID):
             bundle["task"] = VsmTaskType.SERVER_RESTART_BY_ID

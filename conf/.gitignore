@@ -1,5 +1,6 @@
 *.yaml
 !.gitignore
+!scheduler.yaml
 !servers.yaml
-!vertex_urls.yaml
 !server_default.yaml
+!vertex_urls.yaml
