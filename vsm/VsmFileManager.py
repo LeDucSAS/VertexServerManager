@@ -1,8 +1,8 @@
+import logging
 import os
 import shutil
 import tarfile
 import zipfile
-import logging
 
 
 logger = logging.getLogger("VsmFileManager")

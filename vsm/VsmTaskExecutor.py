@@ -1,13 +1,13 @@
-import logging
-from sys import platform
 import ctypes
-import sys
+import logging
 import os
+import sys
+from sys import platform
 import yaml
-from vsm.VsmTaskType import VsmTaskType
-from vsm.VertexServerInstaller import  VertexServerInstaller
-from vsm.VertexServerManager import VertexServerManager
 from vsm.ModioDownloadManager import ModioDownloadManager
+from vsm.VertexServerInstaller import VertexServerInstaller
+from vsm.VertexServerManager import VertexServerManager
+from vsm.VsmTaskType import VsmTaskType
 
 logger = logging.getLogger("VsmTaskExecutor")
 
