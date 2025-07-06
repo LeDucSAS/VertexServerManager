@@ -2,16 +2,15 @@
 # License : Free art license 1.3 https://artlibre.org/
 
 import argparse
-import ctypes
 import logging
 import os
 import sys
-import yaml
 from sys import platform
 from vsm.VertexServerManager import VertexServerManager
-from vsm.VertexServerInstaller import VertexServerInstaller
 from vsm.IniFileEditor import IniFileEditor
-from vsm.ModioDownloadManager import ModioDownloadManager
+from vsm.VsmTask import VsmTask
+from vsm.VsmTaskType import VsmTaskType
+from vsm.VsmTaskExecutor import VsmTaskExecutor
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s.%(msecs)04d:%(levelname)-8s: %(message)s')
@@ -102,8 +101,6 @@ if len(sys.argv)==1:
     sys.exit(1)
 
 
-
-
 '''
 
 
@@ -114,27 +111,15 @@ Command line arguments interpretation
 
 
 vsm = VertexServerManager()
-vsi = VertexServerInstaller()
+vse = VsmTaskExecutor()
 ife = IniFileEditor()
-
-# Server parameter
-if config["set_server_name"]:
-    vsm.SERVER_PARAMS['name'] = config["set_server_name"]
-
-if config["set_server_port"] is not None:
-    if config["set_server_port"] > 0:
-        vsm.SERVER_PARAMS['port'] = config["set_server_port"]
-
-if config["set_server_map"]:
-    vsm.SERVER_PARAMS['map'] = config["set_server_map"]
-
-if config["set_server_mode"]:
-    vsm.SERVER_PARAMS['mode'] = config["set_server_mode"]
 
 
 # Do init
 if config["init"] == True:
-    vsi.create_server_folder_structure()
+    do_vsm_init = VsmTask().create(VsmTaskType.CREATE_SERVER_FOLDER_STRUCTURE)
+    vse.execute(do_vsm_init)
+
 
 # Do list servers
 if config["list_servers"] == True:
@@ -153,61 +138,44 @@ if config["list_servers"] == True:
         print("No server installed.")
     print("")
 
+
 # Do server install
 if config["install_server"] == True:
-    if platform == "linux" or platform == "linux2":
-        vsi.install_game_server()
-    elif platform == "win32":
-        # Need to execute as admin because of symbolic linking map folder.
-        print("\n")
-        print("Windows script initialization need to execute as admin because of symbolic linking map folder.")
-        print("Basically, it link once a common './maps/' to './servers/GameServerXXXXX/UserCreatedContent/maps/'.")
-        print("Anything in ./maps/ folder is common to all other servers and do not need to dupplicates.")
-        print("\n")
-
-        def is_admin():
-            try:
-                is_admin_value = ctypes.windll.shell32.IsUserAnAdmin()
-                if not is_admin_value:
-                    print("Script will now ask for admin privilege.\n")
-                    input("Press ENTER to continue or CTRL+C to exit.\n\n")
-                return is_admin_value
-            
-            except:
-                return False
-
-        if is_admin():
-            print("---------------------------\n")
-            print("Vertex MCS Server installation procedure starts.\n")
-            try:
-                vsi.install_game_server()
-            except:
-                input("\nAn error occured. Press enter to exit script.")
-            
-            input("\nCourtesy input action to read logs.\nPress enter to terminate the script whenever you want.\n\n")
-        else:
-            # Re-run the program with admin rights
-            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-    
+    do_server_install = VsmTask().create(VsmTaskType.SERVER_INSTALL)
+    vse.execute(do_server_install)
 
 
 # Do start server by port number
 if config["start_id"]:
-    if config["start_id"] > 0:
-        vsm.start_server_by_id(config["start_id"])
+    if int(config["start_id"]) > 0:
+        do_server_start = VsmTask().create(VsmTaskType.SERVER_START)
+        do_server_start["server_id"] = config["start_id"]
+
+        if config["set_server_port"] is not None:
+            if config["set_server_port"] > 0:
+                do_server_start["server_id"] = config["set_server_port"]
+        if config["set_server_name"]:
+            do_server_start["server_name"] = config["set_server_name"]
+        if config["set_server_map"]:
+            do_server_start["server_map"] = config["set_server_map"]
+        if config["set_server_mode"]:
+            do_server_start["server_mode"] = config["set_server_mode"]
+        vse.execute(do_server_start)
     else:
         serverList = vsm.get_server_list_only_localname(os.getcwd())
         if serverList:
             print("List of installed server :")
             for server_localname in serverList: print(server_localname)
         else:
-            print("No server installed.")
+            logger.warning("No server installed.")
 
 
 # Do kill server by port number
 if config["kill_id"]:
     if config["kill_id"] > 0:
-        vsm.kill_server_by_id(config["kill_id"])
+        do_server_stop = VsmTask().create(VsmTaskType.SERVER_STOP_BY_ID)
+        do_server_stop["server_id"] = config["kill_id"]
+        vse.execute(do_server_stop)
     else:
         serverList = vsm.get_server_list_only_localname(os.getcwd())
         if serverList:
@@ -227,7 +195,9 @@ if config["restart_id"]:
             for server_localname in serverList: 
                 if server_localname.endswith(str(config["restart_id"])):
                     print(f"Will restart {server_localname}")
-                    vsm.restart_server_by_localname(server_localname)
+                    do_server_restart_by_localname = VsmTask().create(VsmTaskType.SERVER_RESTART_BY_LOCALNAME)
+                    do_server_restart_by_localname["server_localname"] = server_localname
+                    vse.execute(do_server_restart_by_localname)
                     displayNoIdFound = False
                     break
             if displayNoIdFound:
@@ -247,6 +217,7 @@ if config["restart_id"]:
         else:
             print("No server installed.")
 
+
 ''' Desactivated because can't properly specify values unless relying on creating a config file'''
 # Do start all server
 # if config["start_all"]:
@@ -264,9 +235,11 @@ if config["kill_all"]:
     if serverList:
         print("Will kill all servers")
         for server_localname in serverList: 
-            vsm.kill_server_by_localname(server_localname)
+            do_server_stop_by_localname = VsmTask().create(VsmTaskType.SERVER_STOP_BY_LOCALNAME)
+            do_server_stop_by_localname["server_localname"] = server_localname
+            vse.execute(do_server_stop_by_localname)
     else:
-        print("No server installed.")
+        logger.warning("No server installed.")
 
 
 # Do restart all server
@@ -275,9 +248,11 @@ if config["restart_all"]:
     if serverList:
         print("Will restart all servers")
         for server_localname in serverList: 
-            vsm.restart_server_by_localname(server_localname)
+            do_server_restart_by_localname = VsmTask().create(VsmTaskType.SERVER_RESTART_BY_LOCALNAME)
+            do_server_restart_by_localname["server_localname"] = server_localname
+            vse.execute(do_server_restart_by_localname)
     else:
-        print("No server installed.")
+        logger.warning("No server installed.")
 
 
 # Update ini file
@@ -305,17 +280,12 @@ if config["ini_update_server_id"]:
             print("List of installed server :")
             for server_localname in serverList: print(server_localname)
         else:
-            print("No server installed.")
+            logger.warning("No server installed.")
 
 
 # Install new modfile
 if config["install_mod"]:
-    if os.path.isfile('./conf/modio.yaml'):
-        with open('./conf/modio.yaml', 'r') as file:
-            modio_config = yaml.safe_load(file)
-        mdm = ModioDownloadManager(modio_config)
-        mdm.mod_install_direct_url(config["install_mod"])
-    else:
-        print("Please check ./conf/ folder, and create a modio.yaml file from template and add your api key into it.")
-
+    do_install_mod = VsmTask().create(VsmTaskType.MOD_INSTALL)
+    do_install_mod["mod_url"] = config["install_mod"]
+    vse.execute(do_install_mod)
 
