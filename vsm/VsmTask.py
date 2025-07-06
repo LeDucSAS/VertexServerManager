@@ -47,6 +47,6 @@ class VsmTask():
 
         if(task_type == VsmTaskType.SERVER_STOP_BY_LOCALNAME):
             bundle["task"] = VsmTaskType.SERVER_STOP_BY_LOCALNAME
-            bundle["server_id"] = None
+            bundle["server_localname"] = None
 
         return bundle
