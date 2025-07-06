@@ -8,9 +8,9 @@ logger = logging.getLogger("VsmTask")
 
 class VsmTask():
 
-    def create(self, task_type):
+    def create(self, task_type:dict):
         logger.debug(f"create_task( {task_type} )")
-        bundle = {}
+        bundle:dict = {}
         bundle["id"] = uuid.uuid4()
 
         if(task_type == VsmTaskType.CACHE_PURIFICATION):

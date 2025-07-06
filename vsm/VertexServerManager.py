@@ -107,7 +107,7 @@ class VertexServerManager():
         return active_server_list
 
 
-    def is_server_already_started(self, server_localname):
+    def is_server_already_started(self, server_localname:str):
         all_started_servers = self.get_all_started_servers()
         server_already_started = False
         if all_started_servers:
@@ -121,7 +121,7 @@ class VertexServerManager():
     # GET INFORMATIONS
 
 
-    def is_folder_has_been_initialized(self, directory_path=None):
+    def is_folder_has_been_initialized(self, directory_path:str=None):
         logger.debug("is_folder_has_been_initialized() ...")
         result = False
         if directory_path == None:
@@ -137,7 +137,7 @@ class VertexServerManager():
         return result
 
 
-    def get_current_highest_gameserver_id(self, directory_path=None):
+    def get_current_highest_gameserver_id(self, directory_path:str=None):
         logger.debug("get_current_highest_gameserver_id() ...")
         if directory_path == None:
             directory_path = os.getcwd()
@@ -156,7 +156,7 @@ class VertexServerManager():
         return result
     
     
-    def get_server_list_full_Path(self, directory_path):
+    def get_server_list_full_Path(self, directory_path:str):
         logger.debug(f"get_server_list_full_Path() ...")
         result = None
         if self.is_folder_has_been_initialized():
@@ -172,7 +172,7 @@ class VertexServerManager():
         return result
 
 
-    def get_server_list_only_localname(self, directory_path=None):
+    def get_server_list_only_localname(self, directory_path:str=None):
         if directory_path == None:
             directory_path = os.getcwd()
 
@@ -187,7 +187,7 @@ class VertexServerManager():
             return None
 
 
-    def find_server_localname_by_id(self, server_port):
+    def find_server_localname_by_id(self, server_port:str):
         directory_path = os.getcwd()
         serverList = self.get_server_list_only_localname(directory_path)
         has_server_localname_been_found = False
@@ -202,7 +202,7 @@ class VertexServerManager():
 
     ##########
     # START SERVER
-    def start_server_by_localname(self, server_localname):
+    def start_server_by_localname(self, server_localname:str):
         logger.info(f"    ->  Starting server {server_localname} ...")
 
         if int(self.SERVER_PARAMS['port']) < 1:
@@ -249,7 +249,7 @@ class VertexServerManager():
         return server.pid
 
 
-    def start_server_by_id(self, server_port):
+    def start_server_by_id(self, server_port:str):
         server_localname = self.find_server_localname_by_id(server_port)
 
         if server_localname is not None:
@@ -264,7 +264,7 @@ class VertexServerManager():
 
     ##########
     # STOP SERVER 
-    def kill_server_by_localname(self, server_localname):
+    def kill_server_by_localname(self, server_localname:str):
         logger.info(f"    ->  {server_localname} shutting down server ...")
 
         server_is_active = self.is_server_already_started(server_localname)
@@ -315,7 +315,7 @@ class VertexServerManager():
             logger.info(f"    ->  Server {server_localname} has been shutdown")
 
 
-    def kill_server_by_id(self, server_port):
+    def kill_server_by_id(self, server_port:str):
         server_localname = self.find_server_localname_by_id(server_port)
 
         if server_localname is not None:
@@ -327,7 +327,7 @@ class VertexServerManager():
 
 
     # RESTART
-    def restart_server_by_localname(self, server_localname):
+    def restart_server_by_localname(self, server_localname:str):
         fullServerList = self.get_server_list_only_localname(os.getcwd())
         if fullServerList is not None:
             startedServerList = self.get_all_started_servers()
@@ -345,6 +345,6 @@ class VertexServerManager():
             logger.info("No server installed.")
 
 
-    def restart_server_by_id(self, server_port):
+    def restart_server_by_id(self, server_port:str):
         self.restart_server_by_localname(self.find_server_localname_by_id(server_port))
 

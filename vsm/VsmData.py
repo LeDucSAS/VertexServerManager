@@ -14,7 +14,7 @@ class VsmData():
         self.URLS = self.load_yaml_file('./conf/vertex_urls.yaml')
 
 
-    def load_yaml_file(self, yaml_file_path):
+    def load_yaml_file(self, yaml_file_path:str):
         yaml_data = None
         if os.path.isfile(yaml_file_path):
             with open(yaml_file_path, 'r') as file:

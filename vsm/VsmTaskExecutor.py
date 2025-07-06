@@ -19,7 +19,7 @@ class VsmTaskExecutor():
         self.vsi = VertexServerInstaller()
         self.vsm = VertexServerManager()
 
-    def execute(self, task):
+    def execute(self, task:dict):
         task_type = task["task"]
         if(task_type == VsmTaskType.CACHE_PURIFICATION):
             self.vfm.cache_purification()
@@ -48,7 +48,7 @@ class VsmTaskExecutor():
         if(task_type == VsmTaskType.SERVER_RESTART_BY_LOCALNAME):
             self.__game_server_restart_by_localname(task["server_localname"])
 
-    def __install_mod(self, mod_url):
+    def __install_mod(self, mod_url:str):
         if os.path.isfile('./conf/modio.yaml'):
             with open('./conf/modio.yaml', 'r') as file:
                 modio_config = yaml.safe_load(file)
@@ -58,7 +58,7 @@ class VsmTaskExecutor():
             logger.error("Please check ./conf/ folder, and create a modio.yaml file from template and add your api key into it.")
 
 
-    def __game_server_start(self, server_data):
+    def __game_server_start(self, server_data:dict):
         if server_data["server_name"]:
             self.vsm.SERVER_PARAMS['name'] = server_data["server_name"]
         if server_data["server_port"] is not None:
@@ -71,19 +71,19 @@ class VsmTaskExecutor():
         self.vsm.start_server_by_id(server_data["server_id"])
 
 
-    def __game_server_restart_by_localname(self, server_localname_to_restart):
+    def __game_server_restart_by_localname(self, server_localname_to_restart:str):
         self.vsm.restart_server_by_localname(server_localname_to_restart)
 
 
-    def __game_server_restart_by_id(self, server_id_to_restart):
+    def __game_server_restart_by_id(self, server_id_to_restart:str):
         self.vsm.restart_server_by_id(server_id_to_restart)
 
 
-    def __game_server_stop_by_id(self, server_id_to_stop):
+    def __game_server_stop_by_id(self, server_id_to_stop:str):
         self.vsm.kill_server_by_id(server_id_to_stop)
 
 
-    def __game_server_stop_by_localname(self, server_localname_to_stop):
+    def __game_server_stop_by_localname(self, server_localname_to_stop:str):
         self.vsm.kill_server_by_localname(server_localname_to_stop)
 
 
