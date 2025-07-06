@@ -8,7 +8,7 @@ logger = logging.getLogger("VsmTask")
 
 class VsmTask():
 
-    def create(self, task_type:dict):
+    def create(self, task_type:dict) -> dict:
         logger.debug(f"create_task( {task_type} )")
         bundle:dict = {}
         bundle["id"] = uuid.uuid4()

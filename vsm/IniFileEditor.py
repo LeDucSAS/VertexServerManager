@@ -21,7 +21,7 @@ class IniFileEditor():
     def update_ini_file_value             (self, server_localname, ini_filename, key_to_update, new_value):
 
     """
-    def update_ini_file_value(self, server_localname:str, ini_filename:str, key_to_update:str, new_value:str):
+    def update_ini_file_value(self, server_localname:str, ini_filename:str, key_to_update:str, new_value:str) -> bool:
         
         ini_file_path = "./servers/<SERVER_LOCALNAME>/MCS/Saved/Config/LinuxServer/<INI_FILENAME>"
         ini_file_path = ini_file_path.replace("<SERVER_LOCALNAME>", server_localname)

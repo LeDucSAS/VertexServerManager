@@ -26,7 +26,7 @@ class VertexServerInstaller():
         self.URLS = data_store.URLS
 
 
-    def create_server_folder_structure(self, server_init_path:str=None):
+    def create_server_folder_structure(self, server_init_path:str=None) -> None:
         logger.debug("create_server_folder_structure() ...")
         if server_init_path is None:
             server_init_path = os.getcwd()
@@ -64,7 +64,7 @@ class VertexServerInstaller():
         logger.debug("create_server_folder_structure() done")
 
 
-    def install_game_server(self, choosen_version:str=None):
+    def install_game_server(self, choosen_version:str=None) -> None:
         logger.debug("install_game_server() ...")
         logger.debug(f"Param choosen_version is {choosen_version}")
         

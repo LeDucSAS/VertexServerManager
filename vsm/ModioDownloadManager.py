@@ -25,12 +25,12 @@ class ModioDownloadManager():
         self.vfm = VsmFileManager()
     
 
-    def mod_list(self):
+    def mod_list(self) -> None:
         # list all, list available, list installed
         ...
 
 
-    def mod_install_direct_url(self, direct_mod_file_url_to_download:str):
+    def mod_install_direct_url(self, direct_mod_file_url_to_download:str) -> None:
         logger.debug("mod_install_direct_url() ...")
         try:
             game_id = direct_mod_file_url_to_download.split("/games/")[1].split("/")[0]
@@ -54,7 +54,7 @@ class ModioDownloadManager():
         logger.debug("mod_install_direct_url() => done")
 
 
-    def file_extract_to_cache(self, file_path:str, mod_id:str):
+    def file_extract_to_cache(self, file_path:str, mod_id:str) -> None:
         logger.debug("file_extract_to_cache() ...")
         # Create a folder with the ID of the mod so it easier to update
         self.MIODM["extracted_file_path"] = f'{os.getcwd()}/cache/{mod_id}'
@@ -66,7 +66,7 @@ class ModioDownloadManager():
         logger.debug("file_extract_to_cache() => done")
 
 
-    def file_move_from_cache_and_overwrite_to_maps(self, mod_id:str):
+    def file_move_from_cache_and_overwrite_to_maps(self, mod_id:str) -> None:
         logger.debug("file_move_from_cache_and_overwrite_to_maps() ...")
         source = f"{os.getcwd()}/cache/{mod_id}"
         destination = f"{os.getcwd()}/maps/{mod_id}"

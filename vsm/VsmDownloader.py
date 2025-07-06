@@ -12,7 +12,7 @@ class VsmDownloader():
         ...
 
 
-    def download_file_to_cache_basic(self, url_to_download:str):
+    def download_file_to_cache_basic(self, url_to_download:str) -> str:
         logger.debug("download_file_to_cache_basic()...")
         filename = url_to_download.split("/")[-1:][0]
         cache_file_path = f"cache/{filename}"
@@ -26,7 +26,7 @@ class VsmDownloader():
         return cache_file_path
 
 
-    def download_to_cache(self, url_to_download:str, download_step:int = 10):
+    def download_to_cache(self, url_to_download:str, download_step:int = 10) -> str:
         logger.debug("download_to_cache() ...")
         # Getting the file data
         response = requests.get(url_to_download, stream=True, allow_redirects=True)
