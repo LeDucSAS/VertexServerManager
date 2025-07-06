@@ -266,11 +266,11 @@ class VertexServerManager():
     ##########
     # STOP SERVER 
     def kill_server_by_localname(self, server_localname):
-        logger.info(f"    ->  Shutdowning server {server_localname} ...")
+        logger.info(f"    ->  {server_localname} shutting down server ...")
 
         server_is_active = self.is_server_already_started(server_localname)
         if not server_is_active:
-            logger.info(f"    ->  Server {server_localname} is not currently active.")
+            logger.info(f"    ->  {server_localname} server is not currently active.")
             return
 
         errorNoServer = False

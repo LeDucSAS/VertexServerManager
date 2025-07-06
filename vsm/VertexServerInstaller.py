@@ -176,7 +176,7 @@ class VertexServerInstaller():
         ############################################################
         # Kill the server nicely to force save of config files
 
-        logger.info("Shutting down the server properly")
+        logger.info(f"{new_server_localname} shutting down the server properly")
         self.vsm.kill_server_by_localname(new_server_localname)
 
 
