@@ -203,7 +203,7 @@ class VertexServerManager():
     ##########
     # START SERVER
     def start_server_by_localname(self, server_localname:str) -> int:
-        logger.info(f"    ->  Starting server {server_localname} ...")
+        logger.info(f"    ->  {server_localname} Starting server ...")
 
         if int(self.SERVER_PARAMS['port']) < 1:
             self.SERVER_PARAMS['port'] = re.sub('[^0-9]','', server_localname)
@@ -241,7 +241,7 @@ class VertexServerManager():
             shell=True)
             time.sleep(6)
 
-        logger.info(f"    ->  Server {server_localname} has been started")
+        logger.info(f"    ->  {server_localname} has been started")
         logger.info(f"    ->    Port      - {argument_port}")
         logger.info(f"    ->    Game name - {argument_gamename}")
         logger.info(f"    ->    Mode      - {argument_gamemode}")
@@ -310,9 +310,9 @@ class VertexServerManager():
                         logger.info("Warning : Server still alive")
                         serverDed = False
             if serverDed:
-                logger.info(f"    ->  Server {server_localname} has been shutdown")
+                logger.info(f"    ->  {server_localname} has been shutdown")
         except subprocess.CalledProcessError as e:
-            logger.info(f"    ->  Server {server_localname} has been shutdown")
+            logger.info(f"    ->  {server_localname} has been shutdown")
 
 
     def kill_server_by_id(self, server_port:str) -> None:
