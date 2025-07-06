@@ -13,9 +13,8 @@ class VsmTask():
         bundle = {}
         bundle["id"] = uuid.uuid4()
 
-        if(task_type == VsmTaskType.CACHE_CLEANUP):
-            bundle["task"] = VsmTaskType.CACHE_CLEANUP
-            # No other data is required
+        if(task_type == VsmTaskType.CACHE_PURIFICATION):
+            bundle["task"] = VsmTaskType.CACHE_PURIFICATION
 
         if(task_type == VsmTaskType.MOD_INSTALL):
             bundle["task"] = VsmTaskType.MOD_INSTALL

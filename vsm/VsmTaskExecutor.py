@@ -8,17 +8,22 @@ from vsm.ModioDownloadManager import ModioDownloadManager
 from vsm.VertexServerInstaller import VertexServerInstaller
 from vsm.VertexServerManager import VertexServerManager
 from vsm.VsmTaskType import VsmTaskType
+from vsm.VsmFileManager import VsmFileManager
 
 logger = logging.getLogger("VsmTaskExecutor")
 
 
 class VsmTaskExecutor():
     def __init__(self):
+        self.vfm = VsmFileManager()
         self.vsi = VertexServerInstaller()
         self.vsm = VertexServerManager()
 
     def execute(self, task):
         task_type = task["task"]
+        if(task_type == VsmTaskType.CACHE_PURIFICATION):
+            self.vfm.cache_purification()
+
         if(task_type == VsmTaskType.CREATE_SERVER_FOLDER_STRUCTURE):
             self.vsi.create_server_folder_structure()
 

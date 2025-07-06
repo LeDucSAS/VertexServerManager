@@ -5,7 +5,7 @@ logger = logging.getLogger("VsmTaskType")
 
 
 class VsmTaskType():
-    CACHE_CLEANUP = "cache_cleanup"
+    CACHE_PURIFICATION = "cache_purification"
     CREATE_SERVER_FOLDER_STRUCTURE = "create_vsm_folder_structure"
     MOD_INSTALL = "mod_install"
     SERVER_INSTALL = "server_install"
