@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 import tarfile
+import yaml
 import zipfile
 
 
@@ -82,4 +83,44 @@ class VsmFileManager():
         )
         logger.debug("create_symlink() done")
         return True
+
+
+    # Generic yaml methods
+    @staticmethod
+    def read_yaml_file(yaml_file_path:str) -> dict:
+        yaml_data = None
+        if os.path.isfile(yaml_file_path):
+            with open(yaml_file_path, 'r') as file:
+                yaml_data = yaml.safe_load(file)
+        else:
+            logger.warning(f"Please check ./conf/ folder if {yaml_file_path} is here.")
+        return yaml_data
+
+
+    @staticmethod
+    def write_yaml_file(yaml_file_path:str, yaml_data:dict) -> dict:
+        with open(yaml_file_path, "w") as file:
+            yaml.dump(yaml_data, file)
+
+
+    # Conf
+    @staticmethod
+    def read_conf_file(conf_file_name:str) -> dict:
+        return VsmFileManager.read_yaml_file(f"./conf/{conf_file_name}")
+
+
+    @staticmethod
+    def write_conf_file(conf_file_name:str, yaml_data:dict) -> dict:
+        return VsmFileManager.write_yaml_file(f"./conf/{conf_file_name}", yaml_data)
+
+
+    # Task
+    @staticmethod
+    def read_task_file(task_file_name:str) -> dict:
+        return VsmFileManager.read_yaml_file(f"./scheduler/{task_file_name}")
+
+
+    @staticmethod
+    def write_task_file(task_file_name:str, yaml_data:dict) -> dict:
+        return VsmFileManager.write_yaml_file(f"./scheduler/{task_file_name}", yaml_data)
 

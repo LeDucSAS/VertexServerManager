@@ -19,7 +19,7 @@ class VertexServerManager():
 
     def __init__(self):
         self.vfm = VsmFileManager()
-        self.SERVER_PARAMS = VsmData().SERVER_DEFAULT
+        self.SERVER_PARAMS = VsmData.get_server_default_conf()
 
 
     """
