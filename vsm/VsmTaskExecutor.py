@@ -9,7 +9,6 @@ from vsm.VertexServerInstaller import VertexServerInstaller
 from vsm.VertexServerManager import VertexServerManager
 from vsm.VsmFileManager import VsmFileManager
 from vsm.VsmTaskType import VsmTaskType
-from vsm.VsmScheduler import VsmScheduler
 
 
 logger = logging.getLogger("VsmTaskExecutor")
@@ -72,11 +71,11 @@ class VsmTaskExecutor():
 
     # Scheduler
     def __scheduler_switch_on(self) -> None:
-        VsmScheduler.start()
+        VsmTaskExecutor.start()
 
 
     def __scheduler_switch_off(self) -> None:
-        VsmScheduler.stop()
+        VsmTaskExecutor.stop()
 
 
     # Server start/stop/restart
@@ -143,4 +142,20 @@ class VsmTaskExecutor():
             else:
                 # Re-run the program with admin rights
                 ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+
+
+    @staticmethod
+    def start():
+        print("scheduler start")
+        scheduler_data = VsmFileManager.read_conf_file("scheduler.yaml")
+        scheduler_data["scheduler_active"] = True
+        VsmFileManager.write_conf_file("scheduler.yaml", scheduler_data)
+
+
+    @staticmethod
+    def stop():
+        print("scheduler stop")
+        scheduler_data = VsmFileManager.read_conf_file("scheduler.yaml")
+        scheduler_data["scheduler_active"] = False
+        VsmFileManager.write_conf_file("scheduler.yaml", scheduler_data)
 

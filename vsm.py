@@ -6,11 +6,13 @@ import logging
 import os
 import sys
 from sys import platform
-from vsm.VertexServerManager import VertexServerManager
+import subprocess
 from vsm.IniFileEditor import IniFileEditor
+from vsm.VertexServerManager import VertexServerManager
+from vsm.VsmFileManager import VsmFileManager
 from vsm.VsmTask import VsmTask
-from vsm.VsmTaskType import VsmTaskType
 from vsm.VsmTaskExecutor import VsmTaskExecutor
+from vsm.VsmTaskType import VsmTaskType
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s.%(msecs)04d:%(levelname)-8s: %(message)s')
@@ -90,7 +92,9 @@ parser.add_argument('--ini-new-value'       , nargs='?'          , const=None, t
 # Mod installation from mod.io
 parser.add_argument('--install-mod', nargs='?', const=None, type=str, help="Input URL of mod.io file to download")
 
-# Scheduler start and stop
+# Scheduler flags
+parser.add_argument("--task", action="store_true", help="If applicable make a task and not a direct command")
+parser.add_argument("--clear-cache", action="store_true", help="Clear cache")
 parser.add_argument("--scheduler-start", action="store_true", help="Start the scheduler")
 parser.add_argument("--scheduler-stop" , action="store_true", help="Stop the scheduler")
 
@@ -291,15 +295,53 @@ if config["ini_update_server_id"]:
 if config["install_mod"]:
     do_install_mod = VsmTask().create(VsmTaskType.MOD_INSTALL)
     do_install_mod["mod_url"] = config["install_mod"]
-    vse.execute(do_install_mod)
+    if config["task"]:
+        VsmFileManager.write_task_file(do_install_mod)
+    else:
+        vse.execute(do_install_mod)
 
 
 # Start task scheduler
 if config["scheduler_start"]:
     vse.execute(VsmTask().create(VsmTaskType.SCHEDULER_START))
+    scheduler_starter_path = os.path.abspath(f"./scheduler_starter.py")
+
+    if platform == "linux" or platform == "linux2":
+        # Need to check
+        server = subprocess.Popen([
+            f"uv run {scheduler_starter_path}"
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        shell=True)
+    elif platform == "win32":
+        # Execute as a background task
+        server = subprocess.Popen([
+            "uv",
+            "run",
+            scheduler_starter_path
+        ],
+        startupinfo=subprocess.STARTUPINFO(
+            dwFlags=subprocess.STARTF_USESHOWWINDOW,
+            wShowWindow=subprocess.SW_HIDE,
+        ),
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.STDOUT,
+        creationflags=subprocess.CREATE_NO_WINDOW,
+        shell=True)
+    print(server)
 
 
 # Stop task scheduler
 if config["scheduler_stop"]:
     vse.execute(VsmTask().create(VsmTaskType.SCHEDULER_STOP))
+
+
+# Stop task scheduler
+if config["clear_cache"]:
+    do_clear_cache = VsmTask().create(VsmTaskType.CACHE_PURIFICATION)
+    if config["task"]:
+        VsmFileManager.write_task_file(do_clear_cache)
+    else:
+        vse.execute(do_clear_cache)
 

@@ -1,7 +1,11 @@
 import logging
 import schedule
-from vsm.VsmData import VsmData
+import time
+import os
+from os import listdir
+from os.path import isfile, join
 from vsm.VsmFileManager import VsmFileManager
+from vsm.VsmTaskExecutor import VsmTaskExecutor
 
 
 logger = logging.getLogger("VsmScheduler")
@@ -18,22 +22,30 @@ class VsmScheduler():
     '''
 
     def __init__(self):
+        self.executor = VsmTaskExecutor()
+        self.task_path = "./tasks/"
+        self.scheduler_tracking = "test.yaml"
+        VsmFileManager.write_conf_file(self.scheduler_tracking, {"test_value": 0})
         schedule.run_pending()
         ...
 
+    def start_loop(self):
+        print("bob")
+        while(VsmFileManager.read_conf_file("scheduler.yaml")["scheduler_active"]):
+            time.sleep(1)
+            self.iterate()
+            onlyfiles = [f for f in listdir(self.task_path) if isfile(join(self.task_path, f))]
+            onlyyaml = [f for f in onlyfiles if f.endswith(".yaml")]
+            for task_filename in onlyyaml:
+                self.executor.execute(VsmFileManager.read_task_file(task_filename))
+                task_file_path = os.path.abspath(f"{self.task_path}{task_filename}")
+                os.remove(task_file_path)
+                break
+            logger.debug("loop")
 
-    @staticmethod
-    def start():
-        print("scheduler start")
-        scheduler_data = VsmFileManager.read_conf_file("scheduler.yaml")
-        scheduler_data["scheduler_active"] = True
-        VsmFileManager.write_conf_file("scheduler.yaml", scheduler_data)
-
-
-    @staticmethod
-    def stop():
-        print("scheduler stop")
-        scheduler_data = VsmFileManager.read_conf_file("scheduler.yaml")
-        scheduler_data["scheduler_active"] = False
-        VsmFileManager.write_conf_file("scheduler.yaml", scheduler_data)
-
+    def iterate(self):
+        # if number is going up, then scheduler is active
+        test_data = VsmFileManager.read_conf_file(self.scheduler_tracking)
+        test_data["test_value"] = test_data["test_value"] + 1
+        # print(test_data)
+        VsmFileManager.write_conf_file(self.scheduler_tracking, test_data)

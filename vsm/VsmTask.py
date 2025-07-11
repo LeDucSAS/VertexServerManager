@@ -11,7 +11,7 @@ class VsmTask():
     def create(self, task_type:dict) -> dict:
         logger.debug(f"create_task( {task_type} )")
         bundle:dict = {}
-        bundle["id"] = uuid.uuid4()
+        bundle["uuid"] = str(uuid.uuid4())
 
         if(task_type == VsmTaskType.CACHE_PURIFICATION):
             bundle["task"] = VsmTaskType.CACHE_PURIFICATION

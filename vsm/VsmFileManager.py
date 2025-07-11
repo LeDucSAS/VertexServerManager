@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 import tarfile
+import time
 import yaml
 import zipfile
 
@@ -117,10 +118,13 @@ class VsmFileManager():
     # Task
     @staticmethod
     def read_task_file(task_file_name:str) -> dict:
-        return VsmFileManager.read_yaml_file(f"./scheduler/{task_file_name}")
+        return VsmFileManager.read_yaml_file(f"./tasks/{task_file_name}")
 
 
     @staticmethod
-    def write_task_file(task_file_name:str, yaml_data:dict) -> dict:
-        return VsmFileManager.write_yaml_file(f"./scheduler/{task_file_name}", yaml_data)
+    def write_task_file(task_data:dict) -> dict:
+        if(not "execution_date" in task_data):
+           task_data["execution_date"] = int(time.time()) 
+        task_file_name:str = f"{task_data['execution_date']}_{task_data['uuid']}.yaml"
+        return VsmFileManager.write_yaml_file(f"./tasks/{task_file_name}", task_data)
 
