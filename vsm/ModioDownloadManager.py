@@ -43,7 +43,7 @@ class ModioDownloadManager():
             return False
 
         if(self.enable_cache_purification):
-            VsmFileManager.cache_purification() # Removes everything but .gitignore
+            VsmFileManager.clear_cache() # Removes everything but .gitignore
         downloaded_file = VsmDownloader().download_to_cache(self.MIODM["archive_url"])
         downloaded_file_path = f"cache/{downloaded_file}"
         self.file_extract_to_cache(downloaded_file_path, self.MIODM["mod_id"])

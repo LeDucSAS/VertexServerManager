@@ -13,8 +13,8 @@ class VsmTask():
         bundle:dict = {}
         bundle["uuid"] = str(uuid.uuid4())
 
-        if(task_type == VsmTaskType.CACHE_PURIFICATION):
-            bundle["task"] = VsmTaskType.CACHE_PURIFICATION
+        if(task_type == VsmTaskType.CLEAR_CACHE):
+            bundle["task"] = VsmTaskType.CLEAR_CACHE
 
         elif(task_type == VsmTaskType.MOD_INSTALL):
             bundle["task"] = VsmTaskType.MOD_INSTALL

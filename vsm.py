@@ -370,7 +370,7 @@ if config["scheduler_stop"]:
 
 # Stop task scheduler
 if config["clear_cache"]:
-    do_clear_cache = VsmTask().create(VsmTaskType.CACHE_PURIFICATION)
+    do_clear_cache = VsmTask().create(VsmTaskType.CLEAR_CACHE)
     if config["task"]:
         VsmFileManager.write_task_file(do_clear_cache)
     else:

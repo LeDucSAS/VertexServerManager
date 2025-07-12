@@ -23,8 +23,8 @@ class VsmTaskExecutor():
 
     def execute(self, task:dict) -> None:
         task_type = task["task"]
-        if(task_type == VsmTaskType.CACHE_PURIFICATION):
-            VsmFileManager.cache_purification()
+        if(task_type == VsmTaskType.CLEAR_CACHE):
+            VsmFileManager.clear_cache()
 
         elif(task_type == VsmTaskType.CREATE_SERVER_FOLDER_STRUCTURE):
             self.vsi.create_server_folder_structure()
