@@ -126,7 +126,10 @@ ife = IniFileEditor()
 # Do init
 if config["init"] == True:
     do_vsm_init = VsmTask().create(VsmTaskType.CREATE_SERVER_FOLDER_STRUCTURE)
-    vse.execute(do_vsm_init)
+    if config["task"]:
+        VsmFileManager.write_task_file(do_vsm_init)
+    else:
+        vse.execute(do_vsm_init)
 
 
 # Do list servers
@@ -150,7 +153,11 @@ if config["list_servers"] == True:
 # Do server install
 if config["install_server"] == True:
     do_server_install = VsmTask().create(VsmTaskType.SERVER_INSTALL)
-    vse.execute(do_server_install)
+    # I highly don't recommend it on Windows since it requires admin to create symlink
+    if config["task"]:
+        VsmFileManager.write_task_file(do_server_install)
+    else:
+        vse.execute(do_server_install)
 
 
 # Do start server by port number
@@ -168,7 +175,10 @@ if config["start_id"]:
             do_server_start["server_map"] = config["set_server_map"]
         if config["set_server_mode"]:
             do_server_start["server_mode"] = config["set_server_mode"]
-        vse.execute(do_server_start)
+        if config["task"]:
+            VsmFileManager.write_task_file(do_server_start)
+        else:
+            vse.execute(do_server_start)
     else:
         serverList = vsm.get_server_list_only_localname(os.getcwd())
         if serverList:
@@ -183,7 +193,10 @@ if config["kill_id"]:
     if config["kill_id"] > 0:
         do_server_stop = VsmTask().create(VsmTaskType.SERVER_STOP_BY_ID)
         do_server_stop["server_id"] = config["kill_id"]
-        vse.execute(do_server_stop)
+        if config["task"]:
+            VsmFileManager.write_task_file(do_server_stop)
+        else:
+            vse.execute(do_server_stop)
     else:
         serverList = vsm.get_server_list_only_localname(os.getcwd())
         if serverList:
@@ -205,7 +218,10 @@ if config["restart_id"]:
                     print(f"Will restart {server_localname}")
                     do_server_restart_by_localname = VsmTask().create(VsmTaskType.SERVER_RESTART_BY_LOCALNAME)
                     do_server_restart_by_localname["server_localname"] = server_localname
-                    vse.execute(do_server_restart_by_localname)
+                    if config["task"]:
+                        VsmFileManager.write_task_file(do_server_restart_by_localname)
+                    else:
+                        vse.execute(do_server_restart_by_localname)
                     displayNoIdFound = False
                     break
             if displayNoIdFound:
@@ -245,7 +261,10 @@ if config["kill_all"]:
         for server_localname in serverList: 
             do_server_stop_by_localname = VsmTask().create(VsmTaskType.SERVER_STOP_BY_LOCALNAME)
             do_server_stop_by_localname["server_localname"] = server_localname
-            vse.execute(do_server_stop_by_localname)
+            if config["task"]:
+                VsmFileManager.write_task_file(do_server_stop_by_localname)
+            else:
+                vse.execute(do_server_stop_by_localname)
     else:
         logger.warning("No server installed.")
 
@@ -258,7 +277,10 @@ if config["restart_all"]:
         for server_localname in serverList: 
             do_server_restart_by_localname = VsmTask().create(VsmTaskType.SERVER_RESTART_BY_LOCALNAME)
             do_server_restart_by_localname["server_localname"] = server_localname
-            vse.execute(do_server_restart_by_localname)
+            if config["task"]:
+                VsmFileManager.write_task_file(do_server_restart_by_localname)
+            else:
+                vse.execute(do_server_restart_by_localname)
     else:
         logger.warning("No server installed.")
 
@@ -334,7 +356,11 @@ if config["scheduler_start"]:
 
 # Stop task scheduler
 if config["scheduler_stop"]:
-    vse.execute(VsmTask().create(VsmTaskType.SCHEDULER_STOP))
+    do_scheduler_stop = VsmTask().create(VsmTaskType.SCHEDULER_STOP)
+    if config["task"]:
+        VsmFileManager.write_task_file(do_scheduler_stop)
+    else:
+        vse.execute(do_scheduler_stop)
 
 
 # Stop task scheduler
