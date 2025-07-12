@@ -7,6 +7,7 @@ import os
 import sys
 from sys import platform
 import subprocess
+import time
 from vsm.IniFileEditor import IniFileEditor
 from vsm.VertexServerManager import VertexServerManager
 from vsm.VsmFileManager import VsmFileManager
@@ -325,6 +326,10 @@ if config["install_mod"]:
 
 # Start task scheduler
 if config["scheduler_start"]:
+    print("Just in case, forcing stop of any scheduler")
+    do_scheduler_stop = VsmTask().create(VsmTaskType.SCHEDULER_STOP)
+    time.sleep(5)
+    print("Executing scheduler")
     vse.execute(VsmTask().create(VsmTaskType.SCHEDULER_START))
     scheduler_starter_path = os.path.abspath(f"./scheduler_starter.py")
 
