@@ -18,7 +18,6 @@ logger = logging.getLogger("VertexServerInstaller")
 class VertexServerInstaller():
 
     def __init__(self):
-        self.vfm = VsmFileManager()
         self.vsm = VertexServerManager()
         self.vsd = VsmDownloader()
         self.SERVER_DEFAULT = VsmData.get_server_default_conf()
@@ -102,14 +101,14 @@ class VertexServerInstaller():
         logger.info("Extracting server archive file into ./cache/")
         
         if platform == "linux" or platform == "linux2":
-            self.vfm.untargz_file(downloaded_file_path, './cache')
+            VsmFileManager.untargz_file(downloaded_file_path, './cache')
         elif platform == "win32":
-            self.vfm.unzip_file(downloaded_file_path, './cache')
+            VsmFileManager.unzip_file(downloaded_file_path, './cache')
         
         logger.info("    ->  Done")
 
         logger.info("Deleting downloaded file from ./cache/")
-        self.vfm.remove_at_path(downloaded_file_path)
+        VsmFileManager.remove_at_path(downloaded_file_path)
         logger.info("    ->  Done")
         
 
@@ -133,7 +132,7 @@ class VertexServerInstaller():
             server_source = "./cache/Server"
         
         server_destination = f"./servers/{new_server_localname}"
-        self.vfm.move_folder(server_source, server_destination)
+        VsmFileManager.move_folder(server_source, server_destination)
         logger.info("    ->  Done")
 
 
@@ -142,7 +141,7 @@ class VertexServerInstaller():
         
         if platform == "linux" or platform == "linux2":
             logger.info("Clean ./cache/ from useless files")
-            self.vfm.remove_at_path('./cache/launcher/')
+            VsmFileManager.remove_at_path('./cache/launcher/')
             logger.info("    ->  Done")
 
         
@@ -183,7 +182,7 @@ class VertexServerInstaller():
         # Make symlink to add map folder to gameserver to optimize spacedisk
         logger.info("Make symlink of ./maps/ inside UserCreatedContent")
         # That is the part that requires having Admin rights
-        symlink_has_been_created = self.vfm.create_symlink("./maps/", f"./servers/{new_server_localname}/MCS/UserCreatedContent/maps/")
+        symlink_has_been_created = VsmFileManager.create_symlink("./maps/", f"./servers/{new_server_localname}/MCS/UserCreatedContent/maps/")
         if symlink_has_been_created:
             logger.info("    ->  Done")
         else:

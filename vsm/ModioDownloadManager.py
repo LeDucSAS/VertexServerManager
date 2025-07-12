@@ -22,7 +22,6 @@ class ModioDownloadManager():
         # Local data
         self.MIODM["downloaded_file_path"] = ''
         self.MIODM["extracted_file_path"] = ''
-        self.vfm = VsmFileManager()
     
 
     def mod_list(self) -> None:
@@ -44,12 +43,12 @@ class ModioDownloadManager():
             return False
 
         if(self.enable_cache_purification):
-            self.vfm.cache_purification() # Removes everything but .gitignore
+            VsmFileManager.cache_purification() # Removes everything but .gitignore
         downloaded_file = VsmDownloader().download_to_cache(self.MIODM["archive_url"])
         downloaded_file_path = f"cache/{downloaded_file}"
         self.file_extract_to_cache(downloaded_file_path, self.MIODM["mod_id"])
         self.file_move_from_cache_and_overwrite_to_maps(self.MIODM["mod_id"])
-        self.vfm.cache_mod_cleanup(f"{os.getcwd()}/cache/{self.MIODM["mod_id"]}/", f"{os.getcwd()}/{downloaded_file_path}")
+        VsmFileManager.cache_mod_cleanup(f"{os.getcwd()}/cache/{self.MIODM["mod_id"]}/", f"{os.getcwd()}/{downloaded_file_path}")
         
         logger.debug("mod_install_direct_url() => done")
 
@@ -62,7 +61,7 @@ class ModioDownloadManager():
         os.mkdir(target_path)
         file_ext = file_path.split("/")[-1].split(".")[1]
         if file_ext == "zip":
-            self.vfm.unzip_file(file_path, target_path)
+            VsmFileManager.unzip_file(file_path, target_path)
         logger.debug("file_extract_to_cache() => done")
 
 
@@ -72,9 +71,9 @@ class ModioDownloadManager():
         destination = f"{os.getcwd()}/maps/{mod_id}"
         if os.path.isdir(destination):
             logger.info(f"Deleting pre-existing '{destination}'.")
-            self.vfm.remove_at_path(destination)
+            VsmFileManager.remove_at_path(destination)
         logger.info(f"Moving mod folder from cache to maps folder'.")
-        self.vfm.move_folder(source, destination)
+        VsmFileManager.move_folder(source, destination)
         if os.path.isdir(destination):
             logger.info(f"Move success '{destination}'.")
         logger.debug("file_move_from_cache_and_overwrite_to_maps() => done")

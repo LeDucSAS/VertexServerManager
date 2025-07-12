@@ -17,7 +17,6 @@ logger = logging.getLogger("VsmTaskExecutor")
 class VsmTaskExecutor():
 
     def __init__(self):
-        self.vfm = VsmFileManager()
         self.vsi = VertexServerInstaller()
         self.vsm = VertexServerManager()
 
@@ -25,7 +24,7 @@ class VsmTaskExecutor():
     def execute(self, task:dict) -> None:
         task_type = task["task"]
         if(task_type == VsmTaskType.CACHE_PURIFICATION):
-            self.vfm.cache_purification()
+            VsmFileManager.cache_purification()
 
         elif(task_type == VsmTaskType.CREATE_SERVER_FOLDER_STRUCTURE):
             self.vsi.create_server_folder_structure()

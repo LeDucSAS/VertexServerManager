@@ -12,34 +12,34 @@ logger = logging.getLogger("VsmFileManager")
 
 class VsmFileManager():
 
-    def __init__(self):
-        ...
-
-
-    def cache_mod_cleanup(self, cached_folder:str, cached_file:str) -> None:
+    @staticmethod
+    def cache_mod_cleanup(cached_folder:str, cached_file:str) -> None:
         logger.debug("cacheCleanup() ...")
-        self.remove_at_path(cached_folder)
-        self.remove_at_path(cached_file)
+        VsmFileManager.remove_at_path(cached_folder)
+        VsmFileManager.remove_at_path(cached_file)
         logger.debug("cacheCleanup() => done")
 
 
-    def cache_purification(self) -> None:
-        logger.debug("cache_purification() ...")
+    @staticmethod
+    def clear_cache() -> None:
+        logger.debug("clear_cache() ...")
         folder_path = f"{os.getcwd()}/cache/"
         retain_files = [".gitignore"]
-        self.__folder_purification(folder_path, retain_files)
-        logger.debug("cache_purification() done")
+        VsmFileManager.__folder_purification(folder_path, retain_files)
+        logger.debug("clear_cache() done")
 
 
-    def __folder_purification(self, folder_to_purify:str, retain_files:list = []) -> None:
+    @staticmethod
+    def __folder_purification(folder_to_purify:str, retain_files:list = []) -> None:
         logger.debug("__folder_purification() ...")
         for item in os.listdir(folder_to_purify):
             if item not in retain_files:
-                self.remove_at_path(f"{folder_to_purify}{item}")
+                VsmFileManager.remove_at_path(f"{folder_to_purify}{item}")
         logger.debug("__folder_purification() done")
 
 
-    def remove_at_path(self, path_to_remove:str) -> None:
+    @staticmethod
+    def remove_at_path(path_to_remove:str) -> None:
         logger.debug("remove_at_path() ...")
         if os.path.isfile(path_to_remove):
             logger.info(f"Removing file : {path_to_remove}")
@@ -47,12 +47,13 @@ class VsmFileManager():
         elif os.path.isdir(path_to_remove):
             logger.info(f"Removing dir : {path_to_remove}")
             shutil.rmtree(path_to_remove)
-        else: 
+        else:
             logger.info(f"Nothing to remove at : {path_to_remove}")
         logger.debug("remove_at_path() done")
 
 
-    def untargz_file(self, tarGzFilePath:str, extractTargetPath:str) -> None:
+    @staticmethod
+    def untargz_file(tarGzFilePath:str, extractTargetPath:str) -> None:
         logger.debug("untargz_file() ...")
         logger.info(f"Untargzing {tarGzFilePath} to {extractTargetPath}")
         fileExtractor = tarfile.open(tarGzFilePath)
@@ -61,7 +62,8 @@ class VsmFileManager():
         logger.debug("untargz_file() done")
 
 
-    def unzip_file(self, zipFilePath:str, extractTargetPath:str) -> None:
+    @staticmethod
+    def unzip_file(zipFilePath:str, extractTargetPath:str) -> None:
         logger.debug("unzip_file() ...")
         logger.info(f"Unzipping {zipFilePath} to {extractTargetPath}")
         with zipfile.ZipFile(zipFilePath, 'r') as zip_ref:
@@ -69,14 +71,16 @@ class VsmFileManager():
         logger.debug("unzip_file() done")
 
 
-    def move_folder(self, source_dir:str, destination_dir:str) -> None:
+    @staticmethod
+    def move_folder(source_dir:str, destination_dir:str) -> None:
         logger.debug("move_folder() ...")
         logger.info(f"Moving {source_dir} to {destination_dir}")
         shutil.move(source_dir, destination_dir)
         logger.debug("move_folder() done")
 
 
-    def create_symlink(self, symlink_source_path:str, symlink_target_path:str) -> bool:
+    @staticmethod
+    def create_symlink(symlink_source_path:str, symlink_target_path:str) -> bool:
         logger.debug("create_symlink() ...")
         os.symlink(
             os.path.abspath(symlink_source_path), 
