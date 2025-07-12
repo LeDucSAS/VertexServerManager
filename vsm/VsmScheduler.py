@@ -37,9 +37,12 @@ class VsmScheduler():
             onlyfiles = [f for f in listdir(self.task_path) if isfile(join(self.task_path, f))]
             onlyyaml = [f for f in onlyfiles if f.endswith(".yaml")]
             for task_filename in onlyyaml:
-                self.executor.execute(VsmFileManager.read_task_file(task_filename))
                 task_file_path = os.path.abspath(f"{self.task_path}{task_filename}")
-                os.remove(task_file_path)
+                try:
+                    self.executor.execute(VsmFileManager.read_task_file(task_filename))
+                    os.rename(task_file_path, os.path.abspath(f"{self.task_path}/ok/{task_filename}"))
+                except:
+                    os.rename(task_file_path, os.path.abspath(f"{self.task_path}/ko/{task_filename}"))
                 break
             logger.debug("loop")
 

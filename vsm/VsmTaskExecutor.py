@@ -27,35 +27,38 @@ class VsmTaskExecutor():
         if(task_type == VsmTaskType.CACHE_PURIFICATION):
             self.vfm.cache_purification()
 
-        if(task_type == VsmTaskType.CREATE_SERVER_FOLDER_STRUCTURE):
+        elif(task_type == VsmTaskType.CREATE_SERVER_FOLDER_STRUCTURE):
             self.vsi.create_server_folder_structure()
 
-        if(task_type == VsmTaskType.MOD_INSTALL):
+        elif(task_type == VsmTaskType.MOD_INSTALL):
             self.__install_mod(task["mod_url"])
 
-        if(task_type == VsmTaskType.SCHEDULER_START):
+        elif(task_type == VsmTaskType.SCHEDULER_START):
             self.__scheduler_switch_on()
 
-        if(task_type == VsmTaskType.SCHEDULER_STOP):
+        elif(task_type == VsmTaskType.SCHEDULER_STOP):
             self.__scheduler_switch_off()
 
-        if(task_type == VsmTaskType.SERVER_INSTALL):
+        elif(task_type == VsmTaskType.SERVER_INSTALL):
             self.__game_server_install()
 
-        if(task_type == VsmTaskType.SERVER_STOP_BY_ID):
+        elif(task_type == VsmTaskType.SERVER_STOP_BY_ID):
             self.__game_server_stop_by_id(task["server_id"])
 
-        if(task_type == VsmTaskType.SERVER_STOP_BY_LOCALNAME):
+        elif(task_type == VsmTaskType.SERVER_STOP_BY_LOCALNAME):
             self.__game_server_stop_by_localname(task["server_localname"])
 
-        if(task_type == VsmTaskType.SERVER_START):
+        elif(task_type == VsmTaskType.SERVER_START):
             self.__game_server_start(task)
 
-        if(task_type == VsmTaskType.SERVER_RESTART_BY_ID):
+        elif(task_type == VsmTaskType.SERVER_RESTART_BY_ID):
             self.__game_server_restart_by_id(task["server_id"])
 
-        if(task_type == VsmTaskType.SERVER_RESTART_BY_LOCALNAME):
+        elif(task_type == VsmTaskType.SERVER_RESTART_BY_LOCALNAME):
             self.__game_server_restart_by_localname(task["server_localname"])
+
+        else:
+            raise ValueError(f"VsmTaskExecutor.execute => The task type '{task_type}' is not a valid VsmTaskType")
 
 
     # Mod install

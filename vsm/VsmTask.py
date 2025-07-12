@@ -16,28 +16,28 @@ class VsmTask():
         if(task_type == VsmTaskType.CACHE_PURIFICATION):
             bundle["task"] = VsmTaskType.CACHE_PURIFICATION
 
-        if(task_type == VsmTaskType.MOD_INSTALL):
+        elif(task_type == VsmTaskType.MOD_INSTALL):
             bundle["task"] = VsmTaskType.MOD_INSTALL
             bundle["mod_url"] = None
 
-        if(task_type == VsmTaskType.SCHEDULER_START):
+        elif(task_type == VsmTaskType.SCHEDULER_START):
             bundle["task"] = VsmTaskType.SCHEDULER_START
 
-        if(task_type == VsmTaskType.SCHEDULER_STOP):
+        elif(task_type == VsmTaskType.SCHEDULER_STOP):
             bundle["task"] = VsmTaskType.SCHEDULER_STOP
 
-        if(task_type == VsmTaskType.SERVER_INSTALL):
+        elif(task_type == VsmTaskType.SERVER_INSTALL):
             bundle["task"] = VsmTaskType.SERVER_INSTALL
 
-        if(task_type == VsmTaskType.SERVER_RESTART_BY_ID):
+        elif(task_type == VsmTaskType.SERVER_RESTART_BY_ID):
             bundle["task"] = VsmTaskType.SERVER_RESTART_BY_ID
             bundle["server_id"] = None
 
-        if(task_type == VsmTaskType.SERVER_RESTART_BY_LOCALNAME):
+        elif(task_type == VsmTaskType.SERVER_RESTART_BY_LOCALNAME):
             bundle["task"] = VsmTaskType.SERVER_RESTART_BY_LOCALNAME
             bundle["server_localname"] = None
 
-        if(task_type == VsmTaskType.SERVER_START):
+        elif(task_type == VsmTaskType.SERVER_START):
             bundle["task"] = VsmTaskType.SERVER_START
             bundle["server_id"] = None
             bundle["server_name"] = None
@@ -45,12 +45,15 @@ class VsmTask():
             bundle["server_map"] = None
             bundle["server_mode"] = None
 
-        if(task_type == VsmTaskType.SERVER_STOP_BY_ID):
+        elif(task_type == VsmTaskType.SERVER_STOP_BY_ID):
             bundle["task"] = VsmTaskType.SERVER_STOP_BY_ID
             bundle["server_id"] = None
 
-        if(task_type == VsmTaskType.SERVER_STOP_BY_LOCALNAME):
+        elif(task_type == VsmTaskType.SERVER_STOP_BY_LOCALNAME):
             bundle["task"] = VsmTaskType.SERVER_STOP_BY_LOCALNAME
             bundle["server_localname"] = None
 
+        else:
+            raise ValueError("VsmTask.create => Unknown VsmTaskType")
+        
         return bundle
