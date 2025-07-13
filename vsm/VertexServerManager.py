@@ -45,7 +45,7 @@ class VertexServerManager():
         active_server_list = []
 
         if platform == "linux" or platform == "linux2":
-            serverList = self.get_server_list_only_localname(os.getcwd())
+            serverList = VertexServerManager.get_server_list_only_localname(os.getcwd())
             try:
                 pidlist = check_output(["pidof","MCSServer"], universal_newlines=True).split()
             except CalledProcessError as e:
@@ -120,7 +120,8 @@ class VertexServerManager():
     # GET INFORMATIONS
 
 
-    def is_folder_has_been_initialized(self, directory_path:str=None) -> bool:
+    @staticmethod
+    def is_folder_has_been_initialized(directory_path:str=None) -> bool:
         logger.debug("is_folder_has_been_initialized() ...")
         result = False
         if directory_path == None:
@@ -141,7 +142,7 @@ class VertexServerManager():
         if directory_path == None:
             directory_path = os.getcwd()
 
-        gameServerList = self.get_server_list_full_Path(directory_path)
+        gameServerList = VertexServerManager.get_server_list_full_Path(directory_path)
 
         if gameServerList is None or not gameServerList:
             return None
@@ -154,11 +155,11 @@ class VertexServerManager():
         logger.debug(f"get_current_highest_gameserver_id() returns {result}")
         return result
     
-    
-    def get_server_list_full_Path(self, directory_path:str) -> list:
+    @staticmethod
+    def get_server_list_full_Path(directory_path:str) -> list:
         logger.debug(f"get_server_list_full_Path() ...")
         result = None
-        if self.is_folder_has_been_initialized():
+        if VertexServerManager.is_folder_has_been_initialized():
             rootdir = f"{directory_path}/servers/"
             if os.listdir(rootdir): 
                 gameServerList = []
@@ -171,11 +172,12 @@ class VertexServerManager():
         return result
 
 
-    def get_server_list_only_localname(self, directory_path:str=None) -> list:
+    @staticmethod
+    def get_server_list_only_localname(directory_path:str=None) -> list:
         if directory_path == None:
             directory_path = os.getcwd()
 
-        gameServerList = self.get_server_list_full_Path(directory_path)
+        gameServerList = VertexServerManager.get_server_list_full_Path(directory_path)
         if gameServerList is not None:
             tmp = []
             for server in gameServerList:
@@ -188,7 +190,7 @@ class VertexServerManager():
 
     def find_server_localname_by_id(self, server_port:str) -> str:
         directory_path = os.getcwd()
-        serverList = self.get_server_list_only_localname(directory_path)
+        serverList = VertexServerManager.get_server_list_only_localname(directory_path)
         has_server_localname_been_found = False
         if serverList is not None:
             for server_localname in serverList:
@@ -327,7 +329,7 @@ class VertexServerManager():
 
     # RESTART
     def restart_server_by_localname(self, server_localname:str) -> None:
-        fullServerList = self.get_server_list_only_localname(os.getcwd())
+        fullServerList = VertexServerManager.get_server_list_only_localname(os.getcwd())
         if fullServerList is not None:
             startedServerList = self.get_all_started_servers()
             for startedServer in startedServerList:

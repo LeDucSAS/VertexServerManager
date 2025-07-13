@@ -137,7 +137,7 @@ if config["init"] == True:
 
 # Do list servers
 if config["list_servers"] == True:
-    serverList = vsm.get_server_list_only_localname(os.getcwd())
+    serverList = VertexServerManager.get_server_list_only_localname(os.getcwd())
     if serverList:
         all_started_servers = vsm.get_all_started_servers()
         print("List of installed server [offline or online] and initial starting parameters :")
@@ -183,7 +183,7 @@ if config["start_id"]:
         else:
             vse.execute(do_server_start)
     else:
-        serverList = vsm.get_server_list_only_localname(os.getcwd())
+        serverList = VertexServerManager.get_server_list_only_localname(os.getcwd())
         if serverList:
             print("List of installed server :")
             for server_localname in serverList: print(server_localname)
@@ -201,7 +201,7 @@ if config["kill_id"]:
         else:
             vse.execute(do_server_stop)
     else:
-        serverList = vsm.get_server_list_only_localname(os.getcwd())
+        serverList = VertexServerManager.get_server_list_only_localname(os.getcwd())
         if serverList:
             print("List of installed server :")
             for server_localname in serverList: print(server_localname)
@@ -213,7 +213,7 @@ if config["kill_id"]:
 if config["restart_id"]:
     displayServers = False
     if config["restart_id"] > 0:
-        serverList = vsm.get_server_list_only_localname(os.getcwd())
+        serverList = VertexServerManager.get_server_list_only_localname(os.getcwd())
         if serverList:
             displayNoIdFound = True
             for server_localname in serverList: 
@@ -237,7 +237,7 @@ if config["restart_id"]:
         displayServers = True
 
     if displayServers:
-        serverList = vsm.get_server_list_only_localname(os.getcwd())
+        serverList = VertexServerManager.get_server_list_only_localname(os.getcwd())
         if serverList:
             print("List of installed server :")
             for server_localname in serverList: print(server_localname)
@@ -248,7 +248,7 @@ if config["restart_id"]:
 ''' Desactivated because can't properly specify values unless relying on creating a config file'''
 # Do start all server
 # if config["start_all"]:
-#   serverList = vsm.get_server_list_only_localname(os.getcwd())
+#   serverList = VertexServerMaanger.get_server_list_only_localname(os.getcwd())
 #   if serverList:
 #       print("Will start all servers")
 #       for server_localname in serverList: vsm.start_server_by_localname(server_localname)
@@ -258,7 +258,7 @@ if config["restart_id"]:
 
 # Do kill all server
 if config["kill_all"]:
-    serverList = vsm.get_server_list_only_localname(os.getcwd())
+    serverList = VertexServerManager.get_server_list_only_localname(os.getcwd())
     if serverList:
         print("Will kill all servers")
         for server_localname in serverList: 
@@ -274,7 +274,7 @@ if config["kill_all"]:
 
 # Do restart all server
 if config["restart_all"]:
-    serverList = vsm.get_server_list_only_localname(os.getcwd())
+    serverList = VertexServerManager.get_server_list_only_localname(os.getcwd())
     if serverList:
         print("Will restart all servers")
         for server_localname in serverList: 
@@ -308,7 +308,7 @@ if config["ini_update_server_id"]:
         else:
             print(f"Server {server_localname} is already started. No .ini update will be done.")
     else:
-        serverList = vsm.get_server_list_only_localname(os.getcwd())
+        serverList = VertexServerManager.get_server_list_only_localname(os.getcwd())
         if serverList:
             print("List of installed server :")
             for server_localname in serverList: print(server_localname)

@@ -30,7 +30,7 @@ class VertexServerInstaller():
             server_init_path = os.getcwd()
 
         logger.info("Check that path has not been initialized already.")
-        if not self.vsm.is_folder_has_been_initialized():
+        if not VertexServerManager.is_folder_has_been_initialized():
             logger.debug("Folder has not been initialized")
             map_folder_path    = f"{server_init_path}/maps"
             server_folder_path = f"{server_init_path}/servers"
@@ -87,7 +87,7 @@ class VertexServerInstaller():
 
         ############################################################
         # Check init, download, unzip, clean cache
-        folder_has_been_init = self.vsm.is_folder_has_been_initialized(os.getcwd())
+        folder_has_been_init = VertexServerManager.is_folder_has_been_initialized(os.getcwd())
         if not folder_has_been_init:
             logger.info("Warning : Folder has not been init, script will stop.")
             logger.info("You can init the folder doing like : python ./vsm.py --init")
