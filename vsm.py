@@ -329,7 +329,7 @@ if config["install_mod"]:
 # Start task scheduler
 if config["scheduler_start"]:
     print("Just in case, forcing stop of any scheduler")
-    do_scheduler_stop = VsmTask().create(VsmTaskType.SCHEDULER_STOP)
+    vse.execute(VsmTask().create(VsmTaskType.SCHEDULER_STOP))
     time.sleep(5)
     print("Executing scheduler")
     vse.execute(VsmTask().create(VsmTaskType.SCHEDULER_START))
