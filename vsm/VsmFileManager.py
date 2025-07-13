@@ -183,6 +183,6 @@ class VsmFileManager():
     def write_task_file(task_data:dict) -> dict:
         if(not "execution_date" in task_data):
            task_data["execution_date"] = int(time.time()) 
-        task_file_name:str = f"{task_data['execution_date']}_{task_data['uuid']}.yaml"
+        task_file_name:str = f"{task_data['execution_date']}_{task_data["task"]}_{task_data['uuid']}.yaml"
         return VsmFileManager.write_yaml_file(f"./tasks/{task_file_name}", task_data)
 
