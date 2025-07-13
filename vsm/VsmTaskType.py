@@ -6,6 +6,11 @@ logger = logging.getLogger("VsmTaskType")
 
 class VsmTaskType():
     CLEAR_CACHE = "clear_cache"
+    CLEAR_TASKS_OK = "clear_tasks_ok"
+    CLEAR_TASKS_KO = "clear_tasks_ko"
+    CLEAR_TASKS_ALL = "clear_tasks_all"
+    CLEAR_TASKS_PENDING = "clear_tasks_pending"
+    CLEAR_TASKS_PROCESSED = "clear_tasks_processed"
     CREATE_SERVER_FOLDER_STRUCTURE = "create_vsm_folder_structure"
     MOD_INSTALL = "mod_install"
     SCHEDULER_START = "scheduler_start"

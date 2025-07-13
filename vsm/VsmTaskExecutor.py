@@ -23,39 +23,52 @@ class VsmTaskExecutor():
 
     def execute(self, task:dict) -> None:
         task_type = task["task"]
+
+        ## VSM ENVIRONMENT MANAGEMENT
         if(task_type == VsmTaskType.CLEAR_CACHE):
             VsmFileManager.clear_cache()
-
+        if(task_type == VsmTaskType.CLEAR_TASKS_OK):
+            VsmFileManager.clear_tasks_ok()
+        if(task_type == VsmTaskType.CLEAR_TASKS_KO):
+            VsmFileManager.clear_tasks_ko()
+        if(task_type == VsmTaskType.CLEAR_TASKS_ALL):
+            VsmFileManager.clear_tasks_all()
+        if(task_type == VsmTaskType.CLEAR_TASKS_PENDING):
+            VsmFileManager.clear_tasks_pending()
+        if(task_type == VsmTaskType.CLEAR_TASKS_PROCESSED):
+            VsmFileManager.clear_tasks_processed()
         elif(task_type == VsmTaskType.CREATE_SERVER_FOLDER_STRUCTURE):
             self.vsi.create_server_folder_structure()
 
+
+        ## MOD MANAGEMENT
         elif(task_type == VsmTaskType.MOD_INSTALL):
             self.__install_mod(task["mod_url"])
 
+
+        ## SCHEDULER MANAGEMENT
         elif(task_type == VsmTaskType.SCHEDULER_START):
             self.__scheduler_switch_on()
-
         elif(task_type == VsmTaskType.SCHEDULER_STOP):
             self.__scheduler_switch_off()
 
+
+        ## SERVER MANAGEMENT
         elif(task_type == VsmTaskType.SERVER_INSTALL):
             self.__game_server_install()
-
         elif(task_type == VsmTaskType.SERVER_STOP_BY_ID):
             self.__game_server_stop_by_id(task["server_id"])
-
         elif(task_type == VsmTaskType.SERVER_STOP_BY_LOCALNAME):
             self.__game_server_stop_by_localname(task["server_localname"])
-
         elif(task_type == VsmTaskType.SERVER_START):
             self.__game_server_start(task)
-
         elif(task_type == VsmTaskType.SERVER_RESTART_BY_ID):
             self.__game_server_restart_by_id(task["server_id"])
-
         elif(task_type == VsmTaskType.SERVER_RESTART_BY_LOCALNAME):
             self.__game_server_restart_by_localname(task["server_localname"])
 
+
+        ## UNKOWN VALUE => Something very wrong happened
         else:
             raise ValueError(f"VsmTaskExecutor.execute => The task type '{task_type}' is not a valid VsmTaskType")
 

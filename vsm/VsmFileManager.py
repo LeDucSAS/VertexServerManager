@@ -30,12 +30,65 @@ class VsmFileManager():
 
 
     @staticmethod
+    def clear_tasks_all() -> None:
+        logger.debug("clear_all_tasks() ...")
+        VsmFileManager.clear_tasks_pending()
+        VsmFileManager.clear_tasks_processed()
+        logger.debug("clear_all_tasks() done")
+
+
+    @staticmethod
+    def clear_tasks_processed() -> None:
+        logger.debug("clear_tasks_processed() ...")
+        VsmFileManager.clear_tasks_ok()
+        VsmFileManager.clear_tasks_ko()
+        logger.debug("clear_tasks_processed() done")
+
+
+    @staticmethod
+    def clear_tasks_pending() -> None:
+        logger.debug("clear_tasks_pending() ...")
+        tasks_ok_path = f"{os.getcwd()}/tasks/"
+        retain_files = [".gitignore"]
+        VsmFileManager.__folder_remove_only_files(tasks_ok_path, retain_files)
+        logger.debug("clear_tasks_pending() done")
+
+
+    @staticmethod
+    def clear_tasks_ok() -> None:
+        logger.debug("clear_tasks_ok() ...")
+        tasks_ok_path = f"{os.getcwd()}/tasks/ok/"
+        retain_files = [".gitignore"]
+        VsmFileManager.__folder_remove_only_files(tasks_ok_path, retain_files)
+        logger.debug("clear_tasks_ok() done")
+
+
+    @staticmethod
+    def clear_tasks_ko() -> None:
+        logger.debug("clear_tasks_ko() ...")
+        tasks_ko_path = f"{os.getcwd()}/tasks/ko/"
+        retain_files = [".gitignore"]
+        VsmFileManager.__folder_remove_only_files(tasks_ko_path, retain_files)
+        logger.debug("clear_tasks_ko() done")
+
+
+    @staticmethod
     def __folder_purification(folder_to_purify:str, retain_files:list = []) -> None:
         logger.debug("__folder_purification() ...")
         for item in os.listdir(folder_to_purify):
             if item not in retain_files:
                 VsmFileManager.remove_at_path(f"{folder_to_purify}{item}")
         logger.debug("__folder_purification() done")
+
+
+    @staticmethod
+    def __folder_remove_only_files(folder_to_purify:str, retain_files:list = []) -> None:
+        logger.debug("__folder_remove_only_files() ...")
+        for item in os.listdir(folder_to_purify):
+            if item not in retain_files:
+                if os.path.isfile(item):
+                    VsmFileManager.remove_at_path(f"{folder_to_purify}{item}")
+        logger.debug("__folder_remove_only_files() done")
 
 
     @staticmethod

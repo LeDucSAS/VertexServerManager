@@ -98,6 +98,8 @@ parser.add_argument("--task", action="store_true", help="If applicable make a ta
 parser.add_argument("--clear-cache", action="store_true", help="Clear cache")
 parser.add_argument("--scheduler-start", action="store_true", help="Start the scheduler")
 parser.add_argument("--scheduler-stop" , action="store_true", help="Stop the scheduler")
+parser.add_argument("--clear-tasks-processed" , action="store_true", help="Remove processed tasks (wether OK or KO)")
+
 
 
 # Save and make parser
@@ -375,4 +377,13 @@ if config["clear_cache"]:
         VsmFileManager.write_task_file(do_clear_cache)
     else:
         vse.execute(do_clear_cache)
+
+
+# Remove processed tasks
+if config["clear_tasks_processed"]:
+    do_delete_processed_tasks = VsmTask().create(VsmTaskType.CLEAR_TASKS_PROCESSED)
+    if config["task"]:
+        VsmFileManager.write_task_file(do_delete_processed_tasks)
+    else:
+        vse.execute(do_delete_processed_tasks)
 
