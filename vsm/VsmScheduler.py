@@ -24,13 +24,11 @@ class VsmScheduler():
     def __init__(self):
         self.executor = VsmTaskExecutor()
         self.task_path = "./tasks/"
-        self.scheduler_tracking = "test.yaml"
+        self.scheduler_tracking = "scheduler_heartbeat.yaml"
         VsmFileManager.write_conf_file(self.scheduler_tracking, {"test_value": 0})
         schedule.run_pending()
-        ...
 
     def start_loop(self):
-        print("bob")
         while(VsmFileManager.read_conf_file("scheduler.yaml")["scheduler_active"]):
             time.sleep(1)
             self.iterate()
@@ -49,6 +47,8 @@ class VsmScheduler():
     def iterate(self):
         # if number is going up, then scheduler is active
         test_data = VsmFileManager.read_conf_file(self.scheduler_tracking)
-        test_data["test_value"] = test_data["test_value"] + 1
-        # print(test_data)
+        if(test_data["test_value"] == 100):
+            test_data["test_value"] = 0
+        else:
+            test_data["test_value"] = test_data["test_value"] + 1
         VsmFileManager.write_conf_file(self.scheduler_tracking, test_data)
