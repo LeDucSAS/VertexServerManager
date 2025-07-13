@@ -1,3 +1,4 @@
 # Data concerning locally installed servers
 ---
+daily_autorestart_hour: "02:30"
 ...

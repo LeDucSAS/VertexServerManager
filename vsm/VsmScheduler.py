@@ -28,7 +28,7 @@ class VsmScheduler():
         self.executor = VsmTaskExecutor()
         self.task_path = "./tasks/"
         self.heartbeat_filename = "scheduler_heartbeat.yaml"
-        
+
         # Reset heartbeat value
         VsmFileManager.write_conf_file(self.heartbeat_filename, {"test_value": 0})
 
@@ -39,7 +39,8 @@ class VsmScheduler():
                 do_server_restart_by_localname["server_localname"] = server_localname
                 VsmFileManager.write_task_file(do_server_restart_by_localname)
 
-        schedule.every().day.at("2:30").do(basic_restart_all_servers)
+        autorestart_hour = VsmFileManager.read_conf_file("servers.yaml")["daily_autorestart_hour"]
+        schedule.every().day.at(autorestart_hour).do(basic_restart_all_servers)
 
 
     def start_loop(self):
