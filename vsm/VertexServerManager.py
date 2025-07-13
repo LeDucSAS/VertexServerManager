@@ -234,7 +234,7 @@ class VertexServerManager():
                 server_binary_path, 
                 f"{argument_map}?game={argument_gamemode}",
                 f"-port={argument_port}",
-                f"-servername='{argument_gamename}'"
+                f"-servername=\"{argument_gamename}\""
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
