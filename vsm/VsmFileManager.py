@@ -84,10 +84,11 @@ class VsmFileManager():
     @staticmethod
     def __folder_remove_only_files(folder_to_purify:str, retain_files:list = []) -> None:
         logger.debug("__folder_remove_only_files() ...")
-        for item in os.listdir(folder_to_purify):
-            if item not in retain_files:
-                if os.path.isfile(item):
-                    VsmFileManager.remove_at_path(f"{folder_to_purify}{item}")
+        for filename in os.listdir(folder_to_purify):
+            if filename not in retain_files:
+                filepath = f"{folder_to_purify}{filename}"
+                if os.path.isfile(filepath):
+                    VsmFileManager.remove_at_path(filepath)
         logger.debug("__folder_remove_only_files() done")
 
 
