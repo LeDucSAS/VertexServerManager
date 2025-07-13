@@ -15,15 +15,15 @@ class VsmTask():
 
         if(task_type == VsmTaskType.CLEAR_CACHE):
             bundle["task"] = VsmTaskType.CLEAR_CACHE
-        if(task_type == VsmTaskType.CLEAR_TASKS_OK):
+        elif(task_type == VsmTaskType.CLEAR_TASKS_OK):
             bundle["task"] = VsmTaskType.CLEAR_TASKS_OK
-        if(task_type == VsmTaskType.CLEAR_TASKS_KO):
+        elif(task_type == VsmTaskType.CLEAR_TASKS_KO):
             bundle["task"] = VsmTaskType.CLEAR_TASKS_KO
-        if(task_type == VsmTaskType.CLEAR_TASKS_PROCESSED):
+        elif(task_type == VsmTaskType.CLEAR_TASKS_PROCESSED):
             bundle["task"] = VsmTaskType.CLEAR_TASKS_PROCESSED
-        if(task_type == VsmTaskType.CLEAR_TASKS_PENDING):
+        elif(task_type == VsmTaskType.CLEAR_TASKS_PENDING):
             bundle["task"] = VsmTaskType.CLEAR_TASKS_PENDING
-        if(task_type == VsmTaskType.CLEAR_TASKS_ALL):
+        elif(task_type == VsmTaskType.CLEAR_TASKS_ALL):
             bundle["task"] = VsmTaskType.CLEAR_TASKS_ALL
         
 
