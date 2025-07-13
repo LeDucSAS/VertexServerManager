@@ -28,6 +28,9 @@ class VsmScheduler():
         self.executor = VsmTaskExecutor()
         self.task_path = "./tasks/"
         self.heartbeat_filename = "scheduler_heartbeat.yaml"
+        
+        # Reset heartbeat value
+        VsmFileManager.write_conf_file(self.heartbeat_filename, {"test_value": 0})
 
         # Setup automatic scheduling
         def basic_restart_all_servers():
@@ -37,16 +40,16 @@ class VsmScheduler():
                 VsmFileManager.write_task_file(do_server_restart_by_localname)
 
         schedule.every().day.at("2:30").do(basic_restart_all_servers)
-        # Overwrite heartbeat
-        VsmFileManager.write_conf_file(self.heartbeat_filename, {"test_value": 0})
 
 
     def start_loop(self):
         while(VsmFileManager.read_conf_file("scheduler.yaml")["scheduler_active"]):
-            # Pace execution time
-            time.sleep(1)
             # Update heartbeat
             self.heartbeat()
+
+            # Pace execution time
+            time.sleep(1)
+
             # Check for task files
             onlyfiles = [f for f in listdir(self.task_path) if isfile(join(self.task_path, f))]
             onlyyaml = [f for f in onlyfiles if f.endswith(".yaml")]
@@ -58,16 +61,20 @@ class VsmScheduler():
                 except:
                     os.rename(task_file_path, os.path.abspath(f"{self.task_path}/ko/{task_filename}"))
                 break
+
+            # Pace execution time
+            time.sleep(1)
+
             # Execute pending tasks
             schedule.run_pending()
 
 
     def heartbeat(self):
         # if number is going up, then scheduler is active
-        test_data = VsmFileManager.read_conf_file(self.scheduler_tracking)
+        test_data = VsmFileManager.read_conf_file(self.heartbeat_filename)
         if(test_data["test_value"] == 100):
             test_data["test_value"] = 0
         else:
             test_data["test_value"] = test_data["test_value"] + 1
-        VsmFileManager.write_conf_file(self.scheduler_tracking, test_data)
+        VsmFileManager.write_conf_file(self.heartbeat_filename, test_data)
 
